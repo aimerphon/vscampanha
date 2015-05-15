@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".VisualizarClienteActivity" >
+
+    <TextView
+        android:id="@+id/lblNome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/string_label_nome"
+        android:textAppearance="@style/TextMediumBlue" />
+
+    <TextView
+        android:id="@+id/lblTelefone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lblNome"
+        android:layout_alignStart="@+id/lblNome"
+        android:layout_below="@+id/lblNome"
+        android:layout_marginTop="20dp"
+        android:text="@string/string_label_telefone"
+        android:textAppearance="@style/TextMediumBlue" />
+
+    <TextView
+        android:id="@+id/lblEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lblTelefone"
+        android:layout_alignStart="@+id/lblTelefone"
+        android:layout_below="@+id/lblTelefone"
+        android:layout_marginTop="20dp"
+        android:text="@string/string_label_email"
+        android:textAppearance="@style/TextMediumBlue" />
+
+    <TextView
+        android:id="@+id/txtNome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/lblNome"
+        android:layout_toEndOf="@+id/lblNome"
+        android:layout_toRightOf="@+id/lblNome"
+        android:text="Medium Text"
+        android:textAppearance="@style/TextMediumOrange" />
+
+    <TextView
+        android:id="@+id/txtTelefone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/lblTelefone"
+        android:layout_toEndOf="@+id/lblTelefone"
+        android:layout_toRightOf="@+id/lblTelefone"
+        android:text="Medium Text"
+        android:textAppearance="@style/TextMediumOrange" />
+
+    <TextView
+        android:id="@+id/txtEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/lblEmail"
+        android:layout_toEndOf="@+id/lblEmail"
+        android:layout_toRightOf="@+id/lblEmail"
+        android:text="Medium Text"
+        android:textAppearance="@style/TextMediumOrange" />
+
+</RelativeLayout>

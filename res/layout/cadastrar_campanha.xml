@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.luksfon.villasalute.campanha.view.CadastrarCampanhaActivity" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin" >
+
+            <TextView
+                android:id="@+id/lblDescricao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/string_label_descricao"
+                android:textAppearance="@style/TextMediumBlue" />
+
+            <EditText
+                android:id="@+id/txtDescricao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/lblDescricao"
+                android:layout_alignStart="@+id/lblDescricao"
+                android:layout_below="@+id/lblDescricao"
+                android:layout_marginTop="5dp"
+                android:ems="15"
+                android:enabled="false"
+                android:inputType="text"
+                android:maxLength="60"
+                android:textAppearance="@style/TextMediumOrange" />
+
+            <TextView
+                android:id="@+id/lblTipoMensagem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/txtDescricao"
+                android:layout_alignStart="@+id/txtDescricao"
+                android:layout_below="@+id/txtDescricao"
+                android:layout_marginTop="5dp"
+                android:text="Mensagem:"
+                android:textAppearance="@style/TextMediumBlue" />
+
+            <RadioGroup
+                android:id="@+id/rdgTipo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/lblTipoMensagem"
+                android:layout_alignStart="@+id/lblTipoMensagem"
+                android:layout_below="@+id/lblTipoMensagem"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/rbtTexto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Texto"
+                    android:textAppearance="@style/TextMediumBlue" />
+
+                <RadioButton
+                    android:id="@+id/rbtImagem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Imagem"
+                    android:textAppearance="@style/TextMediumBlue" />
+            </RadioGroup>
+
+            <EditText
+                android:id="@+id/txtMensagem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/rdgTipo"
+                android:layout_alignStart="@+id/rdgTipo"
+                android:layout_below="@+id/rdgTipo"
+                android:layout_marginTop="5dp"
+                android:ems="15"
+                android:inputType="text"
+                android:maxLength="60"
+                android:textAppearance="@style/TextMediumOrange" />
+
+            <Button
+                android:id="@+id/btnImagem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/txtMensagem"
+                android:layout_alignStart="@+id/txtMensagem"
+                android:layout_below="@+id/txtMensagem"
+                android:layout_marginTop="5dp"
+                android:text="Imagem"
+                android:textAppearance="@style/TextMediumBlue" />
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/btnImagem"
+                android:layout_alignStart="@+id/btnImagem"
+                android:layout_below="@+id/btnImagem"
+                android:contentDescription="imagem" />
+
+            <TextView
+                android:id="@+id/lblTipoEnvio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/imageView1"
+                android:layout_alignStart="@+id/imageView1"
+                android:layout_below="@+id/imageView1"
+                android:layout_marginTop="5dp"
+                android:text="Envio:"
+                android:textAppearance="@style/TextMediumBlue" />
+
+            <RadioGroup
+                android:id="@+id/rdgEnvio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/lblTipoEnvio"
+                android:layout_alignStart="@+id/lblTipoEnvio"
+                android:layout_below="@+id/lblTipoEnvio"
+                android:orientation="horizontal" >
+
+                <RadioButton
+                    android:id="@+id/rbtAutomatico"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Direto"
+                    android:textAppearance="@style/TextMediumBlue" />
+
+                <RadioButton
+                    android:id="@+id/rbtManual"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manual"
+                    android:textAppearance="@style/TextMediumBlue" />
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/lblClientes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/rdgEnvio"
+                android:layout_alignStart="@+id/rdgEnvio"
+                android:layout_below="@+id/rdgEnvio"
+                android:layout_marginTop="20dp"
+                android:text="@string/string_label_clientes"
+                android:textAppearance="@style/TextMediumBlue" />
+
+            <GridView
+                android:id="@+id/grid_clientes"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:layout_below="@+id/lblClientes"
+                android:horizontalSpacing="10dp"
+                android:numColumns="1"
+                android:verticalSpacing="1dp" >
+            </GridView>
+        </RelativeLayout>
+    </ScrollView>
+
+</LinearLayout>

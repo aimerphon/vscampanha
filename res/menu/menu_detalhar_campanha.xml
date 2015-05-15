@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    
+    <item
+        android:id="@+id/action_editar"
+        android:icon="@drawable/ic_action_edit"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_editar"/>
+    
+    <item
+        android:id="@+id/action_excluir"
+        android:icon="@drawable/ic_action_remove"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_excluir"/>
+    
+    <item
+        android:id="@+id/action_enviar"
+        android:icon="@drawable/ic_action_send_now"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_enviar"/>
+    
+</menu>

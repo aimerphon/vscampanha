@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.luksfon.villasalute.campanha.view.MainActivity" >
+
+     <item
+        android:id="@+id/action_novo"
+        android:orderInCategory="99"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_new"
+        android:title="@string/action_novo"/>
+     
+    <item
+        android:id="@+id/action_consulta_clientes"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:icon="@drawable/ic_action_group"
+        android:title="@string/action_consulta_clientes"/>
+
+</menu>
