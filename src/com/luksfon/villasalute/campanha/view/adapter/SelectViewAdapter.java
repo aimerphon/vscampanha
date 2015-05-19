@@ -77,10 +77,10 @@ public class SelectViewAdapter<E extends ListViewEntityBase> extends
 		viewHolder.labelviewTitle.setText(item.getLabelTitle());
 		viewHolder.labelviewSubTitle.setText(item.getLabelSubTitle());
 
-		convertView.measure(View.MeasureSpec.makeMeasureSpec(
-				View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
-				View.MeasureSpec.makeMeasureSpec(0,
-						View.MeasureSpec.UNSPECIFIED));
+//		convertView.measure(View.MeasureSpec.makeMeasureSpec(
+//				View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
+//				View.MeasureSpec.makeMeasureSpec(0,
+//						View.MeasureSpec.UNSPECIFIED));
 
 		return convertView;
 	}

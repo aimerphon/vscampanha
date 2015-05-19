@@ -107,41 +107,6 @@
             android:layout_alignStart="@+id/btnImagem"
             android:layout_below="@+id/btnImagem"
             android:contentDescription="imagem" />
-
-        <TextView
-            android:id="@+id/lblTipoEnvio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/imageView1"
-            android:layout_alignStart="@+id/imageView1"
-            android:layout_below="@+id/imageView1"
-            android:layout_marginTop="5dp"
-            android:text="Envio:"
-            android:textAppearance="@style/TextMediumBlue" />
-
-        <RadioGroup
-            android:id="@+id/rdgEnvio"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/lblTipoEnvio"
-            android:layout_alignStart="@+id/lblTipoEnvio"
-            android:layout_below="@+id/lblTipoEnvio"
-            android:orientation="horizontal" >
-
-            <RadioButton
-                android:id="@+id/rbtAutomatico"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Direto"
-                android:textAppearance="@style/TextMediumBlue" />
-
-            <RadioButton
-                android:id="@+id/rbtManual"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Manual"
-                android:textAppearance="@style/TextMediumBlue" />
-        </RadioGroup>
     </RelativeLayout>
 
 </ScrollView>

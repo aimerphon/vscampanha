@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -26,6 +27,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
@@ -53,7 +55,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 	private RadioButton rbtAutomatico;
 
 	private String selectedImagePath;
-	private String filemanagerstring;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -127,10 +128,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		btnSelecionarImagem = (Button) findViewById(R.id.btnImagem);
 		btnSelecionarImagem.setVisibility(View.GONE);
 		btnSelecionarImagem.setOnClickListener(new OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
-				// TODO Auto-generated method stub
 				selecionarImagem();
 			}
 		});
@@ -138,11 +137,9 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 		rbtImagem = (RadioButton) findViewById(R.id.rbtImagem);
 		rbtImagem.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				// TODO Auto-generated method stub
 				txtMensagem.setEnabled(true);
 				btnSelecionarImagem.setVisibility(View.GONE);
 				btnSelecionarImagem.setEnabled(false);
@@ -153,11 +150,9 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		rbtTexto = (RadioButton) findViewById(R.id.rbtTexto);
 		rbtTexto.setChecked(true);
 		rbtTexto.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				// TODO Auto-generated method stub
 				txtMensagem.setEnabled(false);
 				txtMensagem.setText(getApplicationContext().getString(
 						R.string.string_empty));
@@ -171,11 +166,9 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		rbtAutomatico = (RadioButton) findViewById(R.id.rbtAutomatico);
 		rbtAutomatico.setChecked(true);
 		rbtAutomatico.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				// TODO Auto-generated method stub
 				grid_clientes.setVisibility(View.GONE);
 				lblClientes.setVisibility(View.GONE);
 			}
@@ -185,12 +178,14 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 		rbtManual = (RadioButton) findViewById(R.id.rbtManual);
 		rbtManual.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
-				// TODO Auto-generated method stub
 				grid_clientes.setVisibility(View.VISIBLE);
+				ViewGroup.LayoutParams layoutParams = grid_clientes
+						.getLayoutParams();
+				layoutParams.height = getTotalHeight(grid_clientes, grid_clientes.getAdapter().getCount());
+				grid_clientes.setLayoutParams(layoutParams);
 				lblClientes.setVisibility(View.VISIBLE);
 
 				try {
@@ -221,6 +216,33 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		});
 	}
 
+	public void setGridViewHeightBasedOnChildren(GridView gridView, int columns) {
+		int totalHeight = getTotalHeight(gridView, columns);
+		ViewGroup.LayoutParams params = gridView.getLayoutParams();
+		params.height = totalHeight;
+		gridView.setLayoutParams(params);
+	}
+	
+	private int getTotalHeight(GridView gridView, int columns) {
+		ListAdapter listAdapter = gridView.getAdapter();
+		int totalHeight = 0;
+		//int items = listAdapter.getCount();
+		int rows = gridView.getCount();
+
+		View listItem = listAdapter.getView(0, null, gridView);
+		listItem.measure(0, 0);
+		totalHeight = listItem.getMeasuredHeight();
+
+//		float x = 1;
+//		if (items > columns) {
+//			x = items / columns;
+//			rows = (int) (x + 1);
+			totalHeight *= rows;
+//		}
+		
+		return totalHeight;
+	}
+
 	private void CarregarGrid() throws InstantiationException,
 			IllegalAccessException, NoSuchFieldException,
 			NoSuchMethodException, InvocationTargetException,
@@ -231,14 +253,11 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		ArrayList<Cliente> lista1 = clienteController.toList(Cliente.class);
 
 		grid_clientes.setAdapter(new SelectViewAdapter<Cliente>(this, lista1));
-
+		this.setGridViewHeightBasedOnChildren(grid_clientes, lista1.size());
 		grid_clientes.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
-				// String.valueOf(parent.getItemIdAtPosition(position));
-				// grid_clientes.setSelection(position);
 				boolean checked = ((SelectViewAdapter<?>) parent.getAdapter())
 						.selecionarItem(position);
 				if (checked) {
@@ -350,34 +369,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				}
 			}
 		}
-	}
-
-	private void loadPicasaImageFromGallery(final Uri uri) {
-		String[] projection = { MediaColumns.DATA, MediaColumns.DISPLAY_NAME };
-		Cursor cursor = getContentResolver().query(uri, projection, null, null,
-				null);
-		if (cursor != null) {
-			cursor.moveToFirst();
-
-			int columnIndex = cursor.getColumnIndex(MediaColumns.DISPLAY_NAME);
-			if (columnIndex != -1) {
-				new Thread(new Runnable() {
-					// NEW THREAD BECAUSE NETWORK REQUEST WILL BE MADE THAT WILL
-					// BE A LONG PROCESS & BLOCK UI
-					// IF CALLED IN UI THREAD
-					public void run() {
-						try {
-							Bitmap bitmap = android.provider.MediaStore.Images.Media
-									.getBitmap(getContentResolver(), uri);
-							// THIS IS THE BITMAP IMAGE WE ARE LOOKING FOR.
-						} catch (Exception ex) {
-							ex.printStackTrace();
-						}
-					}
-				}).start();
-			}
-		}
-		cursor.close();
 	}
 
 	public String getPath(Uri uri) {

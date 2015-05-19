@@ -25,6 +25,12 @@ public class Campanha extends ListViewEntityBase {
 	@ForeignKey(column="IdSituacao")
 	private Situacao situacao;
 	
+	@Column(name = "DsMensagem", dbType = "TEXT")
+	private String mensagem;
+	
+	@Column(name = "DsPathImagem", dbType = "TEXT")
+	private String caminhoImagem;
+	
 	public int getIdentificador() {
 		return identificador;
 	}
@@ -80,5 +86,21 @@ public class Campanha extends ListViewEntityBase {
 	@Override
 	public int getId() {
 		return getIdentificador();
+	}
+
+	public String getMensagem() {
+		return mensagem;
+	}
+
+	public void setMensagem(String mensagem) {
+		this.mensagem = mensagem;
+	}
+
+	public String getCaminhoImagem() {
+		return caminhoImagem;
+	}
+
+	public void setCaminhoImagem(String caminhoImagem) {
+		this.caminhoImagem = caminhoImagem;
 	}
 }
