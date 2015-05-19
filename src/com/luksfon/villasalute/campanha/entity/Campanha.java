@@ -31,6 +31,9 @@ public class Campanha extends ListViewEntityBase {
 	@Column(name = "DsPathImagem", dbType = "TEXT")
 	private String caminhoImagem;
 	
+	@Column(name = "StTipoEnvio", dbType = "INTEGER")
+	private int tipoEnvio;
+	
 	public int getIdentificador() {
 		return identificador;
 	}
@@ -102,5 +105,13 @@ public class Campanha extends ListViewEntityBase {
 
 	public void setCaminhoImagem(String caminhoImagem) {
 		this.caminhoImagem = caminhoImagem;
+	}
+
+	public int getTipoEnvio() {
+		return tipoEnvio;
+	}
+
+	public void setTipoEnvio(int tipoEnvio) {
+		this.tipoEnvio = tipoEnvio;
 	}
 }
