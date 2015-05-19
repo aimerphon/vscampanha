@@ -30,10 +30,17 @@
     <string name="string_hint_telefone">DDD + Telefone</string>
     <string name="string_label_clientes">Clientes:</string>
     <string name="string_label_descricao">Descrição:</string>
+    <string name="string_label_direto">Direto</string>
     <string name="string_label_email">Email:</string>
+    <string name="string_label_envio">Envio:</string>
+    <string name="string_label_imagem">Imagem</string>
+    <string name="string_label_manual">Manual</string>
+    <string name="string_label_mensagem">Mensagem:</string>
     <string name="string_label_nome">Nome:</string>
+    <string name="string_label_procurar">Procurar</string>
     <string name="string_label_situacao">Situação:</string>
     <string name="string_label_telefone">Telefone:</string>
+    <string name="string_label_texto">Texto</string>
     <string name="string_padrao">informação a ser exibida do banco de dados</string>
     <string name="string_separator">, </string>
     <string name="table_cliente">tCliente</string>

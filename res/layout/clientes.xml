@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_marginTop="5dp"
-        android:text="Envio:"
+        android:text="@string/string_label_envio"
         android:textAppearance="@style/TextMediumBlue" />
 
     <RadioGroup
@@ -30,14 +30,14 @@
             android:id="@+id/rbtAutomatico"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Direto"
+            android:text="@string/string_label_direto"
             android:textAppearance="@style/TextMediumBlue" />
 
         <RadioButton
             android:id="@+id/rbtManual"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Manual"
+            android:text="@string/string_label_manual"
             android:textAppearance="@style/TextMediumBlue" />
     </RadioGroup>
 

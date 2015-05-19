@@ -48,7 +48,7 @@
             android:layout_alignStart="@+id/txtDescricao"
             android:layout_below="@+id/txtDescricao"
             android:layout_marginTop="5dp"
-            android:text="Mensagem:"
+            android:text="@string/string_label_mensagem"
             android:textAppearance="@style/TextMediumBlue" />
 
         <RadioGroup
@@ -64,14 +64,14 @@
                 android:id="@+id/rbtTexto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Texto"
+                android:text="@string/string_label_texto"
                 android:textAppearance="@style/TextMediumBlue" />
 
             <RadioButton
                 android:id="@+id/rbtImagem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Imagem"
+                android:text="@string/string_label_imagem"
                 android:textAppearance="@style/TextMediumBlue" />
         </RadioGroup>
 
@@ -96,7 +96,7 @@
             android:layout_alignStart="@+id/txtMensagem"
             android:layout_below="@+id/txtMensagem"
             android:layout_marginTop="5dp"
-            android:text="Imagem"
+            android:text="@string/string_label_procurar"
             android:textAppearance="@style/TextMediumBlue" />
 
         <ImageView
