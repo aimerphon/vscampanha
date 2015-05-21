@@ -37,6 +37,7 @@ import com.luksfon.villasalute.campanha.controller.ClienteController;
 import com.luksfon.villasalute.campanha.entity.Campanha;
 import com.luksfon.villasalute.campanha.entity.Cliente;
 import com.luksfon.villasalute.campanha.exception.BusinessException;
+import com.luksfon.villasalute.campanha.util.TipoEnvio;
 import com.luksfon.villasalute.campanha.view.adapter.SelectViewAdapter;
 
 public class CadastrarCampanhaActivity extends BaseActivity {
@@ -160,6 +161,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				btnSelecionarImagem.setEnabled(true);
 				imageView1.setVisibility(View.VISIBLE);
 				imageView1.setImageDrawable(null);
+				selectedImagePath = getApplicationContext().getString(
+						R.string.string_empty);
 			}
 		});
 
@@ -184,7 +187,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				grid_clientes.setVisibility(View.VISIBLE);
 				ViewGroup.LayoutParams layoutParams = grid_clientes
 						.getLayoutParams();
-				layoutParams.height = getTotalHeight(grid_clientes, grid_clientes.getAdapter().getCount());
+				layoutParams.height = getTotalHeight(grid_clientes,
+						grid_clientes.getAdapter().getCount());
 				grid_clientes.setLayoutParams(layoutParams);
 				lblClientes.setVisibility(View.VISIBLE);
 
@@ -222,24 +226,18 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		params.height = totalHeight;
 		gridView.setLayoutParams(params);
 	}
-	
+
 	private int getTotalHeight(GridView gridView, int columns) {
 		ListAdapter listAdapter = gridView.getAdapter();
 		int totalHeight = 0;
-		//int items = listAdapter.getCount();
 		int rows = gridView.getCount();
 
 		View listItem = listAdapter.getView(0, null, gridView);
 		listItem.measure(0, 0);
 		totalHeight = listItem.getMeasuredHeight();
 
-//		float x = 1;
-//		if (items > columns) {
-//			x = items / columns;
-//			rows = (int) (x + 1);
-			totalHeight *= rows;
-//		}
-		
+		totalHeight *= rows;
+
 		return totalHeight;
 	}
 
@@ -278,12 +276,29 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		if (validarCampos()) {
 			Campanha campanha = new Campanha();
 			campanha.setDescricao(txtDescricao.getText().toString());
+
+			if (rbtTexto.isChecked()) {
+				campanha.setMensagem(txtMensagem.getText().toString());
+			}
+
+			if (rbtImagem.isChecked()) {
+				campanha.setCaminhoImagem(selectedImagePath);
+			}
+
+			List<Cliente> clientes = new ArrayList<Cliente>();
+
+			if (rbtAutomatico.isChecked()) {
+				campanha.setTipoEnvio(TipoEnvio.AUTOMATICO.getValue());
+				SelectViewAdapter<Cliente> selectAdapter = (SelectViewAdapter<Cliente>) grid_clientes
+						.getAdapter();
+				clientes = (List<Cliente>) selectAdapter.getSelectedItens();
+			} else {
+				campanha.setTipoEnvio(TipoEnvio.MANUAL.getValue());
+			}
+
 			CampanhaController campanhaController = new CampanhaController(
 					true, this.getBaseContext());
-			List<Cliente> clientes = new ArrayList<Cliente>();
-			SelectViewAdapter<Cliente> selectAdapter = (SelectViewAdapter<Cliente>) grid_clientes
-					.getAdapter();
-			clientes = (List<Cliente>) selectAdapter.getSelectedItens();
+
 			campanhaController.insert(campanha, clientes);
 
 			showMessage(R.string.msg_operacao_sucesso);
@@ -298,14 +313,37 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				.getAdapter();
 
 		if (txtDescricao.getText() == null
-				|| txtDescricao.getText().length() == 0) {
+				|| txtDescricao.getText().toString().trim().length() == 0) {
 			txtDescricao.requestFocus();
-			throw new BusinessException(this.getApplicationContext()
+			throw new BusinessException(this
+					.getApplicationContext()
 					.getString(R.string.msg_erro_campo_obrigatorio)
-					.replace("{1}", "Descrição"));
+					.replace(
+							"{1}",
+							this.getApplicationContext().getString(
+									R.string.string_field_descricao)));
 		}
 
-		if (selectAdapter.getSelectedItens().isEmpty()) {
+		if (rbtTexto.isChecked()
+				&& txtMensagem.getText().toString().trim().length() == 0) {
+			txtMensagem.requestFocus();
+			throw new BusinessException(this
+					.getApplicationContext()
+					.getString(R.string.msg_erro_campo_obrigatorio)
+					.replace(
+							"{1}",
+							this.getApplicationContext().getString(
+									R.string.string_field_mensagem)));
+		}
+
+		if (rbtImagem.isChecked() && selectedImagePath.trim().length() == 0) {
+			btnSelecionarImagem.requestFocus();
+			throw new BusinessException(this.getApplicationContext().getString(
+					R.string.msg_erro_selecione_imagem));
+		}
+
+		if (rbtAutomatico.isChecked()
+				&& selectAdapter.getSelectedItens().isEmpty()) {
 			throw new BusinessException(this.getApplicationContext().getString(
 					R.string.msg_erro_selecione_item));
 		}
@@ -358,6 +396,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 						bitmap = android.provider.MediaStore.Images.Media
 								.getBitmap(getContentResolver(),
 										selectedImageUri);
+						selectedImagePath = selectedImageUri.getPath();
 						imageView1.setImageBitmap(bitmap);
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block

@@ -17,4 +17,5 @@ public class BaseActivity extends Activity {
 		toast.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
 		toast.show();
 	}
+	
 }

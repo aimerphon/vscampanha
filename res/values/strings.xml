@@ -20,6 +20,7 @@
     <string name="msg_erro_campo_obrigatorio">Campo {1} obrigatório(a)</string>
     <string name="msg_erro_insertUpdate">Nenhuma linha afetada</string>
     <string name="msg_erro_registro_inexistente">Registro inexistente</string>
+    <string name="msg_erro_selecione_imagem">Selecione uma imagem</string>
     <string name="msg_erro_selecione_item">Selecione pelo menos um item</string>
     <string name="msg_operacao_sucesso">Operação realizada por sucesso</string>
     <string name="order_by_nome">ORDER BY DsNome ASC</string>
@@ -27,6 +28,8 @@
     <string name="prefix_method_set">set</string>
     <string name="prefix_method_get">get</string>
     <string name="string_empty"></string>
+    <string name="string_field_descricao">Descrição</string>
+    <string name="string_field_mensagem">Mensagem</string>
     <string name="string_hint_telefone">DDD + Telefone</string>
     <string name="string_label_clientes">Clientes:</string>
     <string name="string_label_descricao">Descrição:</string>

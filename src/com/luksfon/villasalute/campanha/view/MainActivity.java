@@ -42,6 +42,10 @@ public class MainActivity extends BaseActivity {
 		CampanhaController campanhaController = new CampanhaController(true,
 				getBaseContext());
 
+		//campanhaController.executeSQL("alter table tCampanha add DsMensagem TEXT");
+//		campanhaController.executeSQL("alter table tCampanha add DsPathImagem TEXT");
+//		campanhaController.executeSQL("alter table tCampanha add StManual INTEGER");
+		
 		ArrayList<Campanha> lista1 = campanhaController.toList(Campanha.class);
 
 		GridView gridview = (GridView) findViewById(R.id.grid_campanha);

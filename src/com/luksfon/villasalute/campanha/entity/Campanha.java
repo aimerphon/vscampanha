@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.luksfon.villasalute.campanha.annotation.Column;
 import com.luksfon.villasalute.campanha.annotation.ForeignKey;
+import com.luksfon.villasalute.campanha.annotation.Nullable;
 import com.luksfon.villasalute.campanha.annotation.PrimaryKey;
 import com.luksfon.villasalute.campanha.annotation.Table;
 import com.luksfon.villasalute.campanha.annotation.TableAssociated;
@@ -26,12 +27,14 @@ public class Campanha extends ListViewEntityBase {
 	private Situacao situacao;
 	
 	@Column(name = "DsMensagem", dbType = "TEXT")
+	@Nullable
 	private String mensagem;
 	
 	@Column(name = "DsPathImagem", dbType = "TEXT")
+	@Nullable
 	private String caminhoImagem;
 	
-	@Column(name = "StTipoEnvio", dbType = "INTEGER")
+	@Column(name = "StManual", dbType = "INTEGER")
 	private int tipoEnvio;
 	
 	public int getIdentificador() {

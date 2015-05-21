@@ -757,7 +757,7 @@ public class DatabaseManager {
 		executeSQL(dropTable);
 	}
 
-	protected void executeSQL(String query) {
+	public void executeSQL(String query) {
 		SQLiteDatabase db = null;
 
 		try {

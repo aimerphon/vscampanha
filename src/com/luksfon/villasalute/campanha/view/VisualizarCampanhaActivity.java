@@ -1,5 +1,6 @@
 package com.luksfon.villasalute.campanha.view;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import android.content.Intent;
@@ -19,6 +20,7 @@ import com.luksfon.villasalute.campanha.controller.CampanhaController;
 import com.luksfon.villasalute.campanha.entity.Campanha;
 import com.luksfon.villasalute.campanha.entity.CampanhaCliente;
 import com.luksfon.villasalute.campanha.exception.BusinessException;
+import com.luksfon.villasalute.campanha.util.TipoEnvio;
 import com.luksfon.villasalute.campanha.view.adapter.ListViewAdapter;
 
 public class VisualizarCampanhaActivity extends BaseActivity {
@@ -144,10 +146,11 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	}
 
 	protected void excluirCampanha() {
-		CampanhaController campanhaController = new CampanhaController(
-				true, getApplicationContext());
+		CampanhaController campanhaController = new CampanhaController(true,
+				getApplicationContext());
 		campanhaController.excluirCampanha(campanha);
-		super.showMessage(getApplication().getString(R.string.msg_operacao_sucesso));
+		super.showMessage(getApplication().getString(
+				R.string.msg_operacao_sucesso));
 		super.onBackPressed();
 	}
 
@@ -161,12 +164,34 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				throw new BusinessException(getApplicationContext().getString(
 						R.string.msg_erro_campanha_ja_enviada));
 			}
-			CampanhaCliente campanhaCliente = this.campanha.getClientes().get(
-					indiceUltimoClienteEnviado);
 
-			Uri uri = Uri.parse("smsto:"
-					+ campanhaCliente.getCliente().getTelefone());
-			Intent i = new Intent(Intent.ACTION_SENDTO, uri);
+			String intentAction = Intent.ACTION_SEND;
+			Intent i = new Intent(intentAction);
+
+			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+				CampanhaCliente campanhaCliente = this.campanha.getClientes()
+						.get(indiceUltimoClienteEnviado);
+				Uri uri = Uri.parse("smsto:"
+						+ campanhaCliente.getCliente().getTelefone());
+				intentAction = Intent.ACTION_SENDTO;
+				i = new Intent(intentAction, uri);
+			} else if (campanha.getTipoEnvio() == TipoEnvio.MANUAL.getValue()) {
+
+				if (campanha.getMensagem() != null
+						&& campanha.getMensagem().length() > 0
+						&& !campanha.getMensagem().equals("null")) {
+					i.setType("text/plain");
+					String text = campanha.getMensagem();
+					i.putExtra(Intent.EXTRA_TEXT, text);
+				} else if (campanha.getCaminhoImagem() != null) {
+					i.setType("image/*");
+					Log.d("URI VAL",
+							"selectedImageUri = " + campanha.getCaminhoImagem());
+					i.putExtra(Intent.EXTRA_STREAM,
+							Uri.parse(campanha.getCaminhoImagem()));
+				}
+			}
+
 			i.setPackage("com.whatsapp");
 			startActivity(Intent.createChooser(i, ""));
 		} catch (BusinessException bex) {
@@ -184,18 +209,22 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			CampanhaController campanhaController = new CampanhaController(
 					true, getApplicationContext());
 
-			indiceUltimoClienteEnviado = campanhaController.campanhaEnviadaCliente(
-					campanha, indiceUltimoClienteEnviado);
+			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+				indiceUltimoClienteEnviado = campanhaController
+						.campanhaEnviadaCliente(campanha,
+								indiceUltimoClienteEnviado);
 
-			if (indiceUltimoClienteEnviado < this.campanha.getClientes().size()) {
-				enviarCampanha();
-			} else {
-				finalizado = true;
-				super.showMessage(getApplicationContext().getString(
-						R.string.msg_operacao_sucesso));
-				super.onBackPressed();
+				if (indiceUltimoClienteEnviado < this.campanha.getClientes()
+						.size()) {
+					enviarCampanha();
+				} else {
+					finalizado = true;
+					super.showMessage(getApplicationContext().getString(
+							R.string.msg_operacao_sucesso));
+					super.onBackPressed();
+				}
 			}
-			
+
 			try {
 				carregarTela();
 			} catch (ClassNotFoundException e) {
