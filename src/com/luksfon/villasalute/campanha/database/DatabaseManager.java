@@ -146,7 +146,14 @@ public class DatabaseManager {
 				this.context.getString(R.string.prefix_method_get)
 						+ field.getName().substring(0, 1).toUpperCase()
 						+ field.getName().substring(1), parameters);
-		return String.valueOf(method.invoke(entity, args));
+		
+		Object retorno = method.invoke(entity, args);
+		
+		if (retorno == null) {
+			return null;
+		} else {
+			return String.valueOf(method.invoke(entity, args));	
+		}
 	}
 
 	protected <T extends EntityBase> String getNullColumn(T entity)

@@ -39,6 +39,7 @@
     <string name="string_label_envio">Envio:</string>
     <string name="string_label_imagem">Imagem</string>
     <string name="string_label_manual">Manual</string>
+    <string name="string_label_tipo_mensagem">Tipo de Mensagem:</string>
     <string name="string_label_mensagem">Mensagem:</string>
     <string name="string_label_nome">Nome:</string>
     <string name="string_label_procurar">Procurar</string>

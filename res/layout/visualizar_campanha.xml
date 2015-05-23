@@ -17,9 +17,9 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
         android:text="@string/string_label_descricao"
         android:textAppearance="@style/TextMediumBlue" />
 
@@ -57,12 +57,78 @@
         android:textAppearance="@style/TextMediumOrange" />
 
     <TextView
-        android:id="@+id/lblClientes"
+        android:id="@+id/lblTipoEnvio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/txtSituacao"
         android:layout_alignStart="@+id/txtSituacao"
         android:layout_below="@+id/txtSituacao"
+        android:layout_marginTop="20dp"
+        android:text="@string/string_label_envio"
+        android:textAppearance="@style/TextMediumBlue" />
+
+    <TextView
+        android:id="@+id/txtTipoEnvio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lblTipoEnvio"
+        android:layout_alignStart="@+id/lblTipoEnvio"
+        android:layout_below="@+id/lblTipoEnvio"
+        android:layout_marginTop="2dp"
+        android:text="@string/string_padrao"
+        android:textAppearance="@style/TextMediumOrange" />
+
+    <TextView
+        android:id="@+id/lblTipoMensagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtTipoEnvio"
+        android:layout_alignStart="@+id/txtTipoEnvio"
+        android:layout_below="@+id/txtTipoEnvio"
+        android:layout_marginTop="20dp"
+        android:text="@string/string_label_tipo_mensagem"
+        android:textAppearance="@style/TextMediumBlue" />
+
+    <TextView
+        android:id="@+id/txtTipoMensagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lblTipoMensagem"
+        android:layout_alignStart="@+id/lblTipoMensagem"
+        android:layout_below="@+id/lblTipoMensagem"
+        android:layout_marginTop="2dp"
+        android:text="@string/string_padrao"
+        android:textAppearance="@style/TextMediumOrange" />
+
+    <TextView
+        android:id="@+id/lblMensagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtTipoMensagem"
+        android:layout_alignStart="@+id/txtTipoMensagem"
+        android:layout_below="@+id/txtTipoMensagem"
+        android:layout_marginTop="20dp"
+        android:text="@string/string_label_mensagem"
+        android:textAppearance="@style/TextMediumBlue" />
+
+    <TextView
+        android:id="@+id/txtMensagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/lblMensagem"
+        android:layout_alignStart="@+id/lblMensagem"
+        android:layout_below="@+id/lblMensagem"
+        android:layout_marginTop="2dp"
+        android:text="@string/string_padrao"
+        android:textAppearance="@style/TextMediumOrange" />
+
+    <TextView
+        android:id="@+id/lblClientes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/txtMensagem"
+        android:layout_alignStart="@+id/txtMensagem"
+        android:layout_below="@+id/txtMensagem"
         android:layout_marginTop="20dp"
         android:text="@string/string_label_clientes"
         android:textAppearance="@style/TextMediumBlue" />
@@ -71,8 +137,8 @@
         android:id="@+id/grid_clientes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/lblClientes"
         android:layout_alignLeft="@+id/lblClientes"
+        android:layout_alignStart="@+id/lblClientes"
         android:layout_below="@+id/lblClientes"
         android:layout_marginTop="2dp"
         android:numColumns="1" >

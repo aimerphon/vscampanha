@@ -27,14 +27,20 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 
 	private static final int SELECT_PICTURE = 1;
 
-	private TextView txtDescricao;
-	private TextView txtSituacao;
+	private boolean finalizado;
+	private boolean showMessage;
+	private Campanha campanha;
 	private GridView gridClientes;
 	private int indiceUltimoClienteEnviado;
-	private Campanha campanha;
-	private boolean finalizado;
+	private TextView lblClientes;
+	private TextView txtTipoEnvio;
+	private TextView lblTipoMensagem;
+	private TextView txtTipoMensagem;
+	private TextView lblMensagem;
+	private TextView txtMensagem;
+	private TextView txtDescricao;
+	private TextView txtSituacao;
 	private Uri selectedImageUri;
-	private boolean showMessage;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +105,12 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 		txtDescricao = (TextView) findViewById(R.id.txtDescricao);
 		txtSituacao = (TextView) findViewById(R.id.txtSituacao);
 		gridClientes = (GridView) findViewById(R.id.grid_clientes);
+		txtTipoEnvio = (TextView) findViewById(R.id.txtTipoEnvio);
+		lblTipoMensagem = (TextView) findViewById(R.id.lblTipoMensagem);
+		txtTipoMensagem = (TextView) findViewById(R.id.txtTipoMensagem);
+		lblMensagem = (TextView) findViewById(R.id.lblMensagem);
+		txtMensagem = (TextView) findViewById(R.id.txtMensagem);
+		lblClientes = (TextView) findViewById(R.id.lblClientes);
 
 		carregarTela();
 
@@ -127,10 +139,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 
 		txtDescricao.setText(campanha.getDescricao());
 		txtSituacao.setText(campanha.getSituacao().getDescricao());
-
 		gridClientes.setAdapter(new ListViewAdapter<CampanhaCliente>(this,
 				campanha.getClientes()));
-
 		gridClientes.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -143,6 +153,33 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				startActivity(visuzalizarCliente);
 			}
 		});
+
+		if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
+			txtTipoEnvio.setText(this.getApplicationContext().getString(
+					R.string.string_label_direto));
+			lblTipoMensagem.setVisibility(View.GONE);
+			txtTipoMensagem.setVisibility(View.GONE);
+			lblMensagem.setVisibility(View.GONE);
+			txtMensagem.setVisibility(View.GONE);
+
+		} else {
+			txtTipoEnvio.setText(this.getApplicationContext().getString(
+					R.string.string_label_manual));
+
+			if (campanha.getCaminhoImagem() == null) {
+				txtTipoMensagem.setText(this.getApplicationContext().getString(
+						R.string.string_label_texto));
+				txtMensagem.setText(campanha.getMensagem());
+			} else {
+				txtTipoMensagem.setText(this.getApplicationContext().getString(
+						R.string.string_label_imagem));
+				lblMensagem.setVisibility(View.GONE);
+				txtMensagem.setVisibility(View.GONE);
+			}
+
+			lblClientes.setVisibility(View.GONE);
+			gridClientes.setVisibility(View.GONE);
+		}
 
 		this.campanha = campanha;
 	}
