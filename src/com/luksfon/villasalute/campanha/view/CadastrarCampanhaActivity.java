@@ -30,6 +30,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.luksfon.villasalute.campanha.R;
@@ -51,10 +52,12 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 	private GridView grid_clientes;
 	private ImageView imageView1;
 	private TextView lblClientes;
+	private TextView lblTipoMensagem;
 	private RadioButton rbtTexto;
 	private RadioButton rbtImagem;
 	private RadioButton rbtManual;
 	private RadioButton rbtAutomatico;
+	private RadioGroup rdgTipo;
 
 	private String selectedImagePath;
 	private byte[] byteImagem;
@@ -122,6 +125,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 			NoSuchMethodException, InvocationTargetException,
 			ClassNotFoundException, BusinessException {
 		txtDescricao = (EditText) findViewById(R.id.txtDescricao);
+		lblTipoMensagem = (TextView) findViewById(R.id.lblTipoMensagem);
+		rdgTipo = (RadioGroup) findViewById(R.id.rdgTipo);
 		txtDescricao.setText(this.getApplicationContext().getString(
 				R.string.string_empty));
 		txtDescricao.setEnabled(true);
@@ -176,6 +181,14 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 					boolean isChecked) {
 				grid_clientes.setVisibility(View.GONE);
 				lblClientes.setVisibility(View.GONE);
+				lblTipoMensagem.setVisibility(View.VISIBLE);
+				rdgTipo.setVisibility(View.VISIBLE);
+				// rbtImagem.setVisibility(View.VISIBLE);
+				// rbtTexto.setVisibility(View.VISIBLE);
+				txtMensagem.setVisibility(View.VISIBLE);
+				btnSelecionarImagem.setVisibility(View.GONE);
+				imageView1.setVisibility(View.GONE);
+				rbtTexto.setChecked(true);
 			}
 		});
 
@@ -193,6 +206,9 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 						grid_clientes.getAdapter().getCount());
 				grid_clientes.setLayoutParams(layoutParams);
 				lblClientes.setVisibility(View.VISIBLE);
+				lblTipoMensagem.setVisibility(View.GONE);
+				txtMensagem.setVisibility(View.GONE);
+				rdgTipo.setVisibility(View.GONE);
 
 				try {
 					CarregarGrid();
@@ -327,7 +343,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 									R.string.string_field_descricao)));
 		}
 
-		if (rbtTexto.isChecked()
+		if (rbtTexto.getVisibility() == View.GONE && rbtTexto.isChecked()
 				&& txtMensagem.getText().toString().trim().length() == 0) {
 			txtMensagem.requestFocus();
 			throw new BusinessException(this
@@ -339,13 +355,15 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 									R.string.string_field_mensagem)));
 		}
 
-		if (rbtImagem.isChecked() && selectedImagePath.trim().length() == 0) {
+		if (rbtImagem.getVisibility() == View.GONE && rbtImagem.isChecked()
+				&& selectedImagePath.trim().length() == 0) {
 			btnSelecionarImagem.requestFocus();
 			throw new BusinessException(this.getApplicationContext().getString(
 					R.string.msg_erro_selecione_imagem));
 		}
 
-		if (rbtAutomatico.isChecked()
+		if (rbtAutomatico.getVisibility() == View.GONE
+				&& rbtAutomatico.isChecked()
 				&& selectAdapter.getSelectedItens().isEmpty()) {
 			throw new BusinessException(this.getApplicationContext().getString(
 					R.string.msg_erro_selecione_item));
@@ -401,10 +419,10 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 										selectedImageUri);
 						selectedImagePath = selectedImageUri.toString();
 						imageView1.setImageBitmap(bitmap);
-						
+
 						ByteArrayOutputStream stream = new ByteArrayOutputStream();
 						bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-						
+
 						byteImagem = stream.toByteArray();
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block

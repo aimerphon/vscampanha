@@ -10,6 +10,7 @@
     <string name="action_novo">Novo</string>
     <string name="clausula_where">WHERE</string>
     <string name="condition_primary_key">IdCliente = ?</string>
+    <string name="content_description">imagem</string>
     <string name="database_name">SETTE.db</string>
     <string name="situacao_enviado">1</string>
     <string name="situacao_enviado_descricao">Enviado</string>

@@ -205,6 +205,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 						+ campanhaCliente.getCliente().getTelefone());
 				intentAction = Intent.ACTION_SENDTO;
 				i = new Intent(intentAction, uri);
+				i.setPackage("com.whatsapp");
+				startActivity(Intent.createChooser(i, ""));
 			} else if (campanha.getTipoEnvio() == TipoEnvio.MANUAL.getValue()) {
 
 				if (campanha.getMensagem() != null
@@ -216,11 +218,6 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 					i.setPackage("com.whatsapp");
 					startActivity(Intent.createChooser(i, ""));
 				} else if (campanha.getCaminhoImagem() != null) {
-
-					// i.setType("image/*");
-					// Log.d("URI VAL",
-					// "selectedImageUri = " + campanha.getCaminhoImagem());
-
 					if (selectedImageUri == null) {
 						Intent intent = new Intent();
 						intent.setType("image/*");
@@ -236,8 +233,6 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 						i.setPackage("com.whatsapp");
 						startActivity(Intent.createChooser(i, ""));
 					}
-
-					// i.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
 				}
 			}
 
@@ -301,60 +296,10 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 		}
 	}
 
-	// @Override
-	// protected void onResume() {
-	// // TODO Auto-generated method stub
-	// super.onResume();
-	// if (showMessage) {
-	// showConfirmation();
-	// }
-	// }
-
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
 			if (requestCode == SELECT_PICTURE) {
 				selectedImageUri = data.getData();
-				Log.d("URI VAL",
-						"selectedImageUri = " + selectedImageUri.toString());
-				// String selectedImagePath = getPath(selectedImageUri);
-
-				// if (selectedImagePath != null) {
-				// // IF LOCAL IMAGE, NO MATTER IF ITS DIRECTLY FROM GALLERY
-				// // (EXCEPT PICASSA ALBUM),
-				// // OR OI/ASTRO FILE MANAGER. EVEN DROPBOX IS SUPPORTED BY
-				// // THIS BECAUSE DROPBOX DOWNLOAD THE IMAGE
-				// // IN THIS FORM -
-				// //
-				// file:///storage/emulated/0/Android/data/com.dropbox.android/...
-				// System.out.println("local image");
-				// Bitmap bitmap;
-				// try {
-				// bitmap = android.provider.MediaStore.Images.Media
-				// .getBitmap(getContentResolver(),
-				// selectedImageUri);
-				//
-				// } catch (FileNotFoundException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// } catch (IOException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-				// } else {
-				// System.out.println("picasa image!");
-				// loadPicasaImageFromGallery(selectedImageUri);
-				// Bitmap bitmap;
-				// try {
-				// bitmap = android.provider.MediaStore.Images.Media
-				// .getBitmap(getContentResolver(),
-				// selectedImageUri);
-				// selectedImagePath = selectedImageUri.toString();
-				//
-				// ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				// bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-				//
-				// byte[] byteImagem = stream.toByteArray();
-
 				String intentAction = Intent.ACTION_SEND;
 				Intent i = new Intent(intentAction);
 
@@ -362,32 +307,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				i.putExtra(Intent.EXTRA_STREAM, selectedImageUri);
 				i.setPackage("com.whatsapp");
 				startActivity(Intent.createChooser(i, ""));
-
-				// } catch (FileNotFoundException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// } catch (IOException e) {
-				// // TODO Auto-generated catch block
-				// e.printStackTrace();
-				// }
-				// }
 			}
 		}
 	}
-
-	// public String getPath(Uri uri) {
-	// String[] projection = { MediaColumns.DATA };
-	// Cursor cursor = getContentResolver().query(uri, projection, null, null,
-	// null);
-	// if (cursor != null) {
-	// // HERE YOU WILL GET A NULLPOINTER IF CURSOR IS NULL
-	// // THIS CAN BE, IF YOU USED OI FILE MANAGER FOR PICKING THE MEDIA
-	// cursor.moveToFirst();
-	// int columnIndex = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
-	// String filePath = cursor.getString(columnIndex);
-	// cursor.close();
-	// return filePath;
-	// } else
-	// return uri.getPath(); // FOR OI/ASTRO/Dropbox etc
-	// }
 }

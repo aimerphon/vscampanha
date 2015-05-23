@@ -12,9 +12,8 @@ public class ClienteFragment extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View view = inflater.inflate(R.layout.clientes,
-				container, false);
-		
+		View view = inflater.inflate(R.layout.clientes, container, false);
+
 		return view;
 	}
 }

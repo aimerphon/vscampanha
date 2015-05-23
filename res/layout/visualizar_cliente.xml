@@ -52,7 +52,7 @@
         android:layout_alignBottom="@+id/lblNome"
         android:layout_toEndOf="@+id/lblNome"
         android:layout_toRightOf="@+id/lblNome"
-        android:text="Medium Text"
+        android:text="@string/string_padrao"
         android:textAppearance="@style/TextMediumOrange" />
 
     <TextView
@@ -62,7 +62,7 @@
         android:layout_alignBottom="@+id/lblTelefone"
         android:layout_toEndOf="@+id/lblTelefone"
         android:layout_toRightOf="@+id/lblTelefone"
-        android:text="Medium Text"
+        android:text="@string/string_padrao"
         android:textAppearance="@style/TextMediumOrange" />
 
     <TextView
@@ -72,7 +72,7 @@
         android:layout_alignBottom="@+id/lblEmail"
         android:layout_toEndOf="@+id/lblEmail"
         android:layout_toRightOf="@+id/lblEmail"
-        android:text="Medium Text"
+        android:text="@string/string_padrao"
         android:textAppearance="@style/TextMediumOrange" />
 
 </RelativeLayout>
