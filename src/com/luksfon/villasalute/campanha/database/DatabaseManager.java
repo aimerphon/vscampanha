@@ -347,8 +347,8 @@ public class DatabaseManager {
 
 			String where = sql[0].replace(
 					context.getString(R.string.clausula_where), "");
-			String[] values = sql[1].substring(1).split(context
-					.getString(R.string.string_separator));
+			String[] values = sql[1].substring(1).split(
+					context.getString(R.string.string_separator));
 
 			int rowsAffected = (int) database.delete(tableName, where, values);
 			verifyReturned(rowsAffected);
@@ -582,10 +582,17 @@ public class DatabaseManager {
 							cursor.getInt(cursor.getColumnIndex(table.name()
 									+ "_" + column.name())));
 				} else {
-					method.invoke(
-							entity,
-							cursor.getString(cursor.getColumnIndex(table.name()
-									+ "_" + column.name())));
+					if (column.dbType().equals("TEXT")) {
+						method.invoke(
+								entity,
+								cursor.getString(cursor.getColumnIndex(table
+										.name() + "_" + column.name())));
+					} else if (column.dbType().equals("BLOB")) {
+						method.invoke(
+								entity,
+								cursor.getBlob(cursor.getColumnIndex(table
+										.name() + "_" + column.name())));
+					}
 				}
 			} else if (field.isAnnotationPresent(ForeignKey.class)
 					&& !field.isAnnotationPresent(TableAssociated.class)) {

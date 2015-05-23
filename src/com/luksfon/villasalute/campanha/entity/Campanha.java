@@ -37,6 +37,10 @@ public class Campanha extends ListViewEntityBase {
 	@Column(name = "StManual", dbType = "INTEGER")
 	private int tipoEnvio;
 	
+	@Column(name = "BlImagem", dbType = "BLOB")
+	@Nullable
+	private byte[] imagem;
+	
 	public int getIdentificador() {
 		return identificador;
 	}
@@ -116,5 +120,13 @@ public class Campanha extends ListViewEntityBase {
 
 	public void setTipoEnvio(int tipoEnvio) {
 		this.tipoEnvio = tipoEnvio;
+	}
+
+	public byte[] getImagem() {
+		return imagem;
+	}
+
+	public void setImagem(byte[] imagem) {
+		this.imagem = imagem;
 	}
 }

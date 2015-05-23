@@ -45,6 +45,7 @@ public class MainActivity extends BaseActivity {
 		//campanhaController.executeSQL("alter table tCampanha add DsMensagem TEXT");
 //		campanhaController.executeSQL("alter table tCampanha add DsPathImagem TEXT");
 //		campanhaController.executeSQL("alter table tCampanha add StManual INTEGER");
+		//campanhaController.executeSQL("alter table tCampanha add BlImagem BLOB");
 		
 		ArrayList<Campanha> lista1 = campanhaController.toList(Campanha.class);
 

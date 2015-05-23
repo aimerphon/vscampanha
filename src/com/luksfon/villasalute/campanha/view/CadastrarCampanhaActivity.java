@@ -1,5 +1,6 @@
 package com.luksfon.villasalute.campanha.view;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -56,6 +57,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 	private RadioButton rbtAutomatico;
 
 	private String selectedImagePath;
+	private byte[] byteImagem;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -283,6 +285,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 			if (rbtImagem.isChecked()) {
 				campanha.setCaminhoImagem(selectedImagePath);
+				campanha.setImagem(byteImagem);
 			}
 
 			List<Cliente> clientes = new ArrayList<Cliente>();
@@ -396,8 +399,13 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 						bitmap = android.provider.MediaStore.Images.Media
 								.getBitmap(getContentResolver(),
 										selectedImageUri);
-						selectedImagePath = selectedImageUri.getPath();
+						selectedImagePath = selectedImageUri.toString();
 						imageView1.setImageBitmap(bitmap);
+						
+						ByteArrayOutputStream stream = new ByteArrayOutputStream();
+						bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+						
+						byteImagem = stream.toByteArray();
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
