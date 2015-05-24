@@ -21,9 +21,6 @@ public class VisualizarClienteActivity extends BaseActivity {
 	private TextView txtNome;
 	private TextView txtTelefone;
 	private TextView txtEmail;
-	private TextView lblNome;
-	private TextView lblTelefone;
-	private TextView lblEmail;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +42,6 @@ public class VisualizarClienteActivity extends BaseActivity {
 			txtNome = (TextView) findViewById(R.id.txtNome);
 			txtTelefone = (TextView) findViewById(R.id.txtTelefone);
 			txtEmail = (TextView) findViewById(R.id.txtEmail);
-			lblNome = (TextView) findViewById(R.id.lblNome);
-			lblTelefone = (TextView) findViewById(R.id.lblTelefone);
-			lblEmail = (TextView) findViewById(R.id.lblEmail);
-
 			txtNome.setText(cliente.getNome());
 			txtTelefone.setText(cliente.getTelefone());
 			txtEmail.setText(cliente.getEmail());

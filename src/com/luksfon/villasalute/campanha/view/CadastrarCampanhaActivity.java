@@ -141,6 +141,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				selecionarImagem();
 			}
 		});
+		
 		txtMensagem = (EditText) findViewById(R.id.txtMensagem);
 
 		rbtImagem = (RadioButton) findViewById(R.id.rbtImagem);
@@ -164,12 +165,13 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				txtMensagem.setEnabled(false);
 				txtMensagem.setText(getApplicationContext().getString(
 						R.string.string_empty));
-				btnSelecionarImagem.setVisibility(View.VISIBLE);
-				btnSelecionarImagem.setEnabled(true);
-				imageView1.setVisibility(View.VISIBLE);
-				imageView1.setImageDrawable(null);
-				selectedImagePath = getApplicationContext().getString(
-						R.string.string_empty);
+				//btnSelecionarImagem.setVisibility(View.VISIBLE);
+				//btnSelecionarImagem.setEnabled(true);
+				//imageView1.setVisibility(View.VISIBLE);
+				//imageView1.setImageDrawable(null);
+//				selectedImagePath = getApplicationContext().getString(
+//						R.string.string_empty);
+				selectedImagePath = "imagem";
 			}
 		});
 
@@ -183,8 +185,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				lblClientes.setVisibility(View.GONE);
 				lblTipoMensagem.setVisibility(View.VISIBLE);
 				rdgTipo.setVisibility(View.VISIBLE);
-				// rbtImagem.setVisibility(View.VISIBLE);
-				// rbtTexto.setVisibility(View.VISIBLE);
 				txtMensagem.setVisibility(View.VISIBLE);
 				btnSelecionarImagem.setVisibility(View.GONE);
 				imageView1.setVisibility(View.GONE);
@@ -253,7 +253,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		View listItem = listAdapter.getView(0, null, gridView);
 		listItem.measure(0, 0);
 		totalHeight = listItem.getMeasuredHeight();
-
 		totalHeight *= rows;
 
 		return totalHeight;
@@ -389,19 +388,18 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				selectedImagePath = getPath(selectedImageUri);
 
 				if (selectedImagePath != null) {
-					// IF LOCAL IMAGE, NO MATTER IF ITS DIRECTLY FROM GALLERY
-					// (EXCEPT PICASSA ALBUM),
-					// OR OI/ASTRO FILE MANAGER. EVEN DROPBOX IS SUPPORTED BY
-					// THIS BECAUSE DROPBOX DOWNLOAD THE IMAGE
-					// IN THIS FORM -
-					// file:///storage/emulated/0/Android/data/com.dropbox.android/...
-					System.out.println("local image");
 					Bitmap bitmap;
 					try {
 						bitmap = android.provider.MediaStore.Images.Media
 								.getBitmap(getContentResolver(),
 										selectedImageUri);
+						selectedImagePath = selectedImageUri.toString();
 						imageView1.setImageBitmap(bitmap);
+
+						ByteArrayOutputStream stream = new ByteArrayOutputStream();
+						bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+
+						byteImagem = stream.toByteArray();
 					} catch (FileNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -410,8 +408,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 						e.printStackTrace();
 					}
 				} else {
-					System.out.println("picasa image!");
-					// loadPicasaImageFromGallery(selectedImageUri);
 					Bitmap bitmap;
 					try {
 						bitmap = android.provider.MediaStore.Images.Media
@@ -441,14 +437,13 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		Cursor cursor = getContentResolver().query(uri, projection, null, null,
 				null);
 		if (cursor != null) {
-			// HERE YOU WILL GET A NULLPOINTER IF CURSOR IS NULL
-			// THIS CAN BE, IF YOU USED OI FILE MANAGER FOR PICKING THE MEDIA
 			cursor.moveToFirst();
 			int columnIndex = cursor.getColumnIndexOrThrow(MediaColumns.DATA);
 			String filePath = cursor.getString(columnIndex);
 			cursor.close();
 			return filePath;
-		} else
-			return uri.getPath(); // FOR OI/ASTRO/Dropbox etc
+		} else {
+			return uri.getPath();
+		}
 	}
 }

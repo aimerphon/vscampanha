@@ -161,7 +161,6 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			txtTipoMensagem.setVisibility(View.GONE);
 			lblMensagem.setVisibility(View.GONE);
 			txtMensagem.setVisibility(View.GONE);
-
 		} else {
 			txtTipoEnvio.setText(this.getApplicationContext().getString(
 					R.string.string_label_manual));
@@ -208,7 +207,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	}
 
 	protected void editarCampanha() {
-
+		// TODO: Implementar
 	}
 
 	protected void excluirCampanha() {
@@ -245,10 +244,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				i.setPackage("com.whatsapp");
 				startActivity(Intent.createChooser(i, ""));
 			} else if (campanha.getTipoEnvio() == TipoEnvio.MANUAL.getValue()) {
-
 				if (campanha.getMensagem() != null
-						&& campanha.getMensagem().length() > 0
-						&& !campanha.getMensagem().equals("null")) {
+						&& campanha.getMensagem().length() > 0) {
 					i.setType("text/plain");
 					String text = campanha.getMensagem();
 					i.putExtra(Intent.EXTRA_TEXT, text);
@@ -272,7 +269,6 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 					}
 				}
 			}
-
 		} catch (BusinessException bex) {
 			super.showMessage(bex.getMessage());
 		} catch (Exception ex) {
