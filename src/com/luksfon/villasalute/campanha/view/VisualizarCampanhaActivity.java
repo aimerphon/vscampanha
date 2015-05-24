@@ -20,6 +20,7 @@ import com.luksfon.villasalute.campanha.controller.CampanhaController;
 import com.luksfon.villasalute.campanha.entity.Campanha;
 import com.luksfon.villasalute.campanha.entity.CampanhaCliente;
 import com.luksfon.villasalute.campanha.exception.BusinessException;
+import com.luksfon.villasalute.campanha.util.SituacaoCampanha;
 import com.luksfon.villasalute.campanha.util.TipoEnvio;
 import com.luksfon.villasalute.campanha.view.adapter.ListViewAdapter;
 
@@ -114,10 +115,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 
 		carregarTela();
 
-		if (this.campanha.getClientes() != null
-				&& !this.campanha.getClientes().isEmpty()) {
-			indiceUltimoClienteEnviado = 0;
-		} else {
+		if (this.campanha.getClientes() == null
+				|| this.campanha.getClientes().isEmpty()) {
 			indiceUltimoClienteEnviado = -1;
 		}
 	}
@@ -161,6 +160,18 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			txtTipoMensagem.setVisibility(View.GONE);
 			lblMensagem.setVisibility(View.GONE);
 			txtMensagem.setVisibility(View.GONE);
+
+			if (SituacaoCampanha.ENVIANDO.getValue() == campanha.getSituacao()
+					.getIdentificador()) {
+				indiceUltimoClienteEnviado = 0;
+				for (CampanhaCliente campanhaCliente : campanha.getClientes()) {
+					if (SituacaoCampanha.NAO_ENVIADO.getValue() == campanhaCliente
+							.getSituacao().getIdentificador()) {
+						break;
+					}
+					indiceUltimoClienteEnviado++;
+				}
+			}
 		} else {
 			txtTipoEnvio.setText(this.getApplicationContext().getString(
 					R.string.string_label_manual));

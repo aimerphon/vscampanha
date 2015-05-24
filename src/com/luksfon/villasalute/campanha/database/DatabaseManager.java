@@ -146,13 +146,13 @@ public class DatabaseManager {
 				this.context.getString(R.string.prefix_method_get)
 						+ field.getName().substring(0, 1).toUpperCase()
 						+ field.getName().substring(1), parameters);
-		
+
 		Object retorno = method.invoke(entity, args);
-		
+
 		if (retorno == null) {
 			return null;
 		} else {
-			return String.valueOf(method.invoke(entity, args));	
+			return String.valueOf(method.invoke(entity, args));
 		}
 	}
 
@@ -399,16 +399,16 @@ public class DatabaseManager {
 		String[] pks = getColumnsPK(entity);
 		boolean firstPk = true;
 		Class<T> classEntity = (Class<T>) entity.getClass();
-		String tableName = getTableName(classEntity);
+		//String tableName = getTableName(classEntity);
 		String[] values = getValueKey(entity);
 		int index = 0;
 
 		for (String pk : pks) {
 			if (firstPk) {
-				where(new Restriction(pk, tableName, LogicComparator.Equals,
+				where(new Restriction(pk, "t0", LogicComparator.Equals,
 						values[index++]));
 			} else {
-				and(new Restriction(pk, tableName, LogicComparator.Equals,
+				and(new Restriction(pk, "t0", LogicComparator.Equals,
 						values[index++]));
 			}
 
@@ -500,7 +500,7 @@ public class DatabaseManager {
 					this.context.getString(R.string.string_empty),
 					this.context.getString(R.string.string_empty) };
 
-			buildSql(classEntity, sql, null);
+			buildSql(classEntity, sql, null, 0);
 
 			String[] sqlConditions = buildConditions();
 
@@ -522,16 +522,18 @@ public class DatabaseManager {
 			while (cursor.moveToNext()) {
 				entityReturn = (T) classEntity.newInstance();
 
-				fillEntity(entityReturn, cursor);
+				fillEntity(entityReturn, cursor, 0);
 
 				if (buildAllEntities) {
-					fillListEntity(entityReturn, cursor);
+					fillListEntity(entityReturn, cursor, 0);
 				}
 
 				lista.add(entityReturn);
 			}
 
 			return lista;
+		} catch (Exception ex) {
+			throw new BusinessException(ex.getMessage());
 		} finally {
 			if (cursor != null) {
 				cursor.close();
@@ -562,18 +564,21 @@ public class DatabaseManager {
 		return sqlConditions;
 	}
 
-	private <T> void fillEntity(T entity, Cursor cursor)
+	private <T> void fillEntity(T entity, Cursor cursor, int index)
 			throws NoSuchFieldException, NoSuchMethodException,
 			InvocationTargetException, IllegalAccessException,
 			InstantiationException, IllegalArgumentException,
 			ClassNotFoundException, BusinessException {
 		Method method = null;
 		Column column = null;
-		Table table = entity.getClass().getAnnotation(Table.class);
+		// Table table = entity.getClass().getAnnotation(Table.class);
+		String nameColumn = null;
+		int indexSecundario = index;
 
 		for (Field field : entity.getClass().getDeclaredFields()) {
 			if (field.isAnnotationPresent(Column.class)) {
 				column = field.getAnnotation(Column.class);
+				nameColumn = "t" + String.valueOf(index) + "_" + column.name();
 				method = entity
 						.getClass()
 						.getDeclaredMethod(
@@ -584,28 +589,21 @@ public class DatabaseManager {
 								field.getType());
 
 				if (field.getType().isPrimitive()) {
-					method.invoke(
-							entity,
-							cursor.getInt(cursor.getColumnIndex(table.name()
-									+ "_" + column.name())));
+					method.invoke(entity,
+							cursor.getInt(cursor.getColumnIndex(nameColumn)));
 				} else {
 					if (column.dbType().equals("TEXT")) {
-						method.invoke(
-								entity,
-								cursor.getString(cursor.getColumnIndex(table
-										.name() + "_" + column.name())));
+						method.invoke(entity, cursor.getString(cursor
+								.getColumnIndex(nameColumn)));
 					} else if (column.dbType().equals("BLOB")) {
-						method.invoke(
-								entity,
-								cursor.getBlob(cursor.getColumnIndex(table
-										.name() + "_" + column.name())));
+						method.invoke(entity, cursor.getBlob(cursor
+								.getColumnIndex(nameColumn)));
 					}
 				}
 			} else if (field.isAnnotationPresent(ForeignKey.class)
 					&& !field.isAnnotationPresent(TableAssociated.class)) {
 				Object entityChild = field.getType().newInstance();
-
-				fillEntity(entityChild, cursor);
+				fillEntity(entityChild, cursor, ++indexSecundario);
 
 				method = entity
 						.getClass()
@@ -621,13 +619,13 @@ public class DatabaseManager {
 		}
 	}
 
-	private <T> void fillListEntity(T entity, Cursor cursor)
+	private <T> void fillListEntity(T entity, Cursor cursor, int index)
 			throws NoSuchFieldException, NoSuchMethodException,
 			InvocationTargetException, IllegalAccessException,
 			InstantiationException, IllegalArgumentException,
 			ClassNotFoundException, BusinessException {
 		Method method = null;
-		Table table = entity.getClass().getAnnotation(Table.class);
+		// Table table = entity.getClass().getAnnotation(Table.class);
 		ForeignKey fk = null;
 		TableAssociated tableAssociated = null;
 
@@ -643,12 +641,14 @@ public class DatabaseManager {
 
 				for (String pk : pks) {
 					if (!isAdicionar) {
-						databaseManager.where(new Restriction(fk.column(),
-								table.name(), LogicComparator.Equals, pk));
+						databaseManager.where(new Restriction(fk.column(), "t"
+								+ String.valueOf(index),
+								LogicComparator.Equals, pk));
 						isAdicionar = true;
 					} else {
-						databaseManager.and(new Restriction(fk.column(), table
-								.name(), LogicComparator.Equals, pk));
+						databaseManager.and(new Restriction(fk.column(), "t"
+								+ String.valueOf(index),
+								LogicComparator.Equals, pk));
 					}
 				}
 				method = entity
@@ -668,29 +668,21 @@ public class DatabaseManager {
 		}
 	}
 
-	private void buildSql(Class<?> entity, String[] sql, String tableNameFK)
-			throws InstantiationException, IllegalAccessException,
+	private void buildSql(Class<?> entity, String[] sql, String tableNameFK,
+			int index) throws InstantiationException, IllegalAccessException,
 			ClassNotFoundException {
 		Column column = null;
 		boolean hasAdded = false;
-		String tbName = null;
 		String aliasTable = null;
-
 		ArrayList<Field> fields = new ArrayList<Field>();
-
 		Table table = (Table) entity.getAnnotation(Table.class);
-		tbName = table.name();
-		aliasTable = table.name();
+		String tbName = table.name();
+		aliasTable = "t" + String.valueOf(index);
 
 		if (sql[1] == null || sql[1].isEmpty()) {
-			sql[1] = table.name() + " AS " + table.name();
+			sql[1] = tbName + " AS " + aliasTable;
 		} else if (buildAllEntities) {
-			if (sql[1].contains(tbName + " AS ")) {
-				int indice = sql[1].split(tbName + " AS ").length;
-				aliasTable += String.valueOf(indice);
-			}
-			sql[1] += " LEFT JOIN " + table.name() + " AS " + aliasTable
-					+ " ON ";
+			sql[1] += " LEFT JOIN " + tbName + " AS " + aliasTable + " ON ";
 		}
 
 		for (Field field : entity.getDeclaredFields()) {
@@ -715,14 +707,13 @@ public class DatabaseManager {
 				if (buildAllEntities
 						&& field.isAnnotationPresent(ForeignKey.class)
 						&& !field.isAnnotationPresent(TableAssociated.class)) {
-					// buildSql(field.getType(), sql, tbName);
 					fields.add(field);
 				}
 			}
 		}
 
 		for (Field fks : fields) {
-			buildSql(fks.getType(), sql, tbName);
+			buildSql(fks.getType(), sql, aliasTable, ++index);
 		}
 	}
 
