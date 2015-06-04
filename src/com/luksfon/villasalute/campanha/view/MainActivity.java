@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivity {
 					int position, long id) {
 				Intent visuzalizarCampanha = new Intent(parent.getContext(),
 						VisualizarCampanhaActivity.class);
-				visuzalizarCampanha.putExtra(EXTRA_MESSAGE,
+				visuzalizarCampanha.putExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE,
 						String.valueOf(parent.getItemIdAtPosition(position)));
 				startActivity(visuzalizarCampanha);
 			}

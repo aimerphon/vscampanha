@@ -70,7 +70,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		try {
 			inicializarTela();
 		} catch (Exception ex) {
-			Log.println(0, "ConsultaClientesActivity.onCreate", ex.getMessage());
+			Log.println(0, "CadastrarCampanhaActivity.onCreate", ex.getMessage());
 		}
 	}
 
@@ -206,6 +206,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 						grid_clientes.getAdapter().getCount());
 				grid_clientes.setLayoutParams(layoutParams);
 				lblClientes.setVisibility(View.VISIBLE);
+				// TODO Ajustar a seleção de imagem
 				lblTipoMensagem.setVisibility(View.GONE);
 				txtMensagem.setVisibility(View.GONE);
 				rdgTipo.setVisibility(View.GONE);

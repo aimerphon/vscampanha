@@ -26,6 +26,7 @@ import com.luksfon.villasalute.campanha.view.adapter.ListViewAdapter;
 
 public class VisualizarCampanhaActivity extends BaseActivity {
 
+	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.VisualizarCampanhaActivity.MESSAGE";
 	private static final int SELECT_PICTURE = 1;
 
 	private boolean finalizado;
@@ -126,7 +127,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			NoSuchMethodException, NoSuchFieldException,
 			InvocationTargetException, BusinessException {
 		Intent intent = getIntent();
-		String id = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+		String id = intent.getStringExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE);
 
 		CampanhaController campanhaController = new CampanhaController(true,
 				getBaseContext());
@@ -218,7 +219,11 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	}
 
 	protected void editarCampanha() {
-		// TODO: Implementar
+		Intent editarCampanha = new Intent(this.getApplicationContext(),
+				EditarCampanhaActivity.class);
+		editarCampanha.putExtra(EXTRA_MESSAGE,
+				String.valueOf(campanha.getIdentificador()));
+		startActivity(editarCampanha);
 	}
 
 	protected void excluirCampanha() {

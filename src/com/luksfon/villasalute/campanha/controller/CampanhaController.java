@@ -14,6 +14,7 @@ import com.luksfon.villasalute.campanha.entity.Situacao;
 import com.luksfon.villasalute.campanha.exception.BusinessException;
 import com.luksfon.villasalute.campanha.query.LogicComparator;
 import com.luksfon.villasalute.campanha.query.Restriction;
+import com.luksfon.villasalute.campanha.util.TipoEnvio;
 
 public class CampanhaController extends DatabaseManager {
 
@@ -68,7 +69,88 @@ public class CampanhaController extends DatabaseManager {
 		return rowsAffected;
 	}
 
-	public int campanhaEnviadaCliente(Campanha campanha, int indiceUltimoClienteEnviado) {
+	public int editarCampanha(Campanha entity, List<Cliente> clientes)
+			throws BusinessException {
+		int rowsAffected = 0;
+
+		try {
+			beginTransaction();
+
+			Situacao situacao = new Situacao();
+			situacao.setIdentificador(3);
+			entity.setSituacao(situacao);
+			rowsAffected = super.update(entity);
+			entity.setIdentificador(rowsAffected);
+
+			CampanhaClienteController<CampanhaCliente> campanhaClienteController = new CampanhaClienteController<CampanhaCliente>(
+					true, this.context);
+			CampanhaCliente campanhaCliente = null;
+
+			if (entity.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+				if (entity.getClientes() != null
+						&& !entity.getClientes().isEmpty()) {
+					super.where(
+							new Restriction(
+									context.getString(R.string.table_column_identificador_campanha),
+									context.getString(R.string.table_campanha_cliente),
+									LogicComparator.Equals, String
+											.valueOf(entity.getIdentificador())))
+							.deleteByRestriction(CampanhaCliente.class);
+				}
+
+				for (Cliente cliente : clientes) {
+					campanhaCliente = new CampanhaCliente();
+					campanhaCliente.setCampanha(entity);
+					campanhaCliente.setCliente(cliente);
+					campanhaCliente.setSituacao(situacao);
+
+					campanhaClienteController.insert(campanhaCliente);
+				}
+			}
+
+			saveChanges();
+		} catch (IllegalAccessException ex) {
+			rollBack();
+			throw new BusinessException(
+					this.context
+							.getString(R.string.msg_erro_operacao_nao_realizada));
+		} catch (IllegalArgumentException ex) {
+			rollBack();
+			throw new BusinessException(
+					this.context
+							.getString(R.string.msg_erro_operacao_nao_realizada));
+		} catch (NoSuchMethodException ex) {
+			rollBack();
+			throw new BusinessException(
+					this.context
+							.getString(R.string.msg_erro_operacao_nao_realizada));
+		} catch (InvocationTargetException ex) {
+			rollBack();
+			throw new BusinessException(
+					this.context
+							.getString(R.string.msg_erro_operacao_nao_realizada));
+		} catch (ClassNotFoundException ex) {
+			rollBack();
+			throw new BusinessException(
+					this.context
+							.getString(R.string.msg_erro_operacao_nao_realizada));
+		} catch (BusinessException ex) {
+			rollBack();
+			throw new BusinessException(
+					this.context
+							.getString(R.string.msg_erro_operacao_nao_realizada));
+		} catch (NoSuchFieldException e) {
+			rollBack();
+			throw new BusinessException(
+					this.context
+							.getString(R.string.msg_erro_operacao_nao_realizada));
+		}
+
+		return rowsAffected;
+	}
+
+	public int campanhaEnviadaCliente(Campanha campanha,
+			int indiceUltimoClienteEnviado) {
 		try {
 			beginTransaction();
 
@@ -85,7 +167,7 @@ public class CampanhaController extends DatabaseManager {
 					true, context);
 
 			campanhaClienteController.update(campanhaCliente);
-			
+
 			indiceUltimoClienteEnviado++;
 
 			if (campanhaFinalizada(campanha, indiceUltimoClienteEnviado)) {
@@ -162,11 +244,11 @@ public class CampanhaController extends DatabaseManager {
 			int indiceUltimoClienteEnviado) {
 		boolean finalizada = true;
 
-		if (Integer.valueOf(context.getString(R.string.situacao_enviando))
-				== campanha.getSituacao().getIdentificador()
-				|| Integer.valueOf(
-						context.getString(R.string.situacao_nao_enviado))
-						== campanha.getSituacao().getIdentificador()) {
+		if (Integer.valueOf(context.getString(R.string.situacao_enviando)) == campanha
+				.getSituacao().getIdentificador()
+				|| Integer.valueOf(context
+						.getString(R.string.situacao_nao_enviado)) == campanha
+						.getSituacao().getIdentificador()) {
 			if (existeProximoCliente(campanha, indiceUltimoClienteEnviado)) {
 				finalizada = false;
 			}
