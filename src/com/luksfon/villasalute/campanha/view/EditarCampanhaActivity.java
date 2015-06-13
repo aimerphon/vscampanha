@@ -86,13 +86,11 @@ public class EditarCampanhaActivity extends BaseActivity {
 
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
 		Intent visuzalizarCampanha = new Intent(this.getApplicationContext(),
 				VisualizarCampanhaActivity.class);
 		visuzalizarCampanha.putExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE,
 				String.valueOf(campanha.getIdentificador()));
 		startActivity(visuzalizarCampanha);
-		//super.onBackPressed();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -101,10 +99,16 @@ public class EditarCampanhaActivity extends BaseActivity {
 				getApplicationContext());
 		List<Cliente> clientes = new ArrayList<Cliente>();
 
+		campanha.setDescricao(txtDescricao.getText().toString().trim());
+		
 		if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
 			SelectViewAdapter<Cliente> selectAdapter = (SelectViewAdapter<Cliente>) grid_clientes
 					.getAdapter();
 			clientes = (List<Cliente>) selectAdapter.getSelectedItens();
+		} else if (campanha.getTipoEnvio() == TipoEnvio.MANUAL.getValue()) {
+			if (rbtTexto.isChecked()) {
+				campanha.setMensagem(txtMensagem.getText().toString().trim());
+			}
 		}
 
 		try {
@@ -116,7 +120,6 @@ public class EditarCampanhaActivity extends BaseActivity {
 			showMessage(e.getMessage());
 			super.onBackPressed();
 		}
-
 	}
 
 	protected void inicializarTela() throws ClassNotFoundException,
