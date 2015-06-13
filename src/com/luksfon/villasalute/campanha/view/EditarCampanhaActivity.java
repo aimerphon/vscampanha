@@ -49,12 +49,13 @@ public class EditarCampanhaActivity extends BaseActivity {
 	private RadioButton rbtManual;
 	private RadioButton rbtAutomatico;
 	private RadioGroup rdgTipo;
+	private boolean voltar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.editar_campanha);
-
+		voltar = true;
 		try {
 			inicializarTela();
 		} catch (Exception ex) {
@@ -72,25 +73,27 @@ public class EditarCampanhaActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_accept:
+			voltar = false;
 			editarCampanha();
 			return true;
 		default:
-			Intent visuzalizarCampanha = new Intent(this.getApplicationContext(),
-					VisualizarCampanhaActivity.class);
-			visuzalizarCampanha.putExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE,
-					String.valueOf(campanha.getIdentificador()));
-			startActivity(visuzalizarCampanha);
 			return true;
 		}
 	}
 
 	@Override
 	public void onBackPressed() {
-		Intent visuzalizarCampanha = new Intent(this.getApplicationContext(),
-				VisualizarCampanhaActivity.class);
-		visuzalizarCampanha.putExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE,
-				String.valueOf(campanha.getIdentificador()));
-		startActivity(visuzalizarCampanha);
+		if (!voltar) {
+			Intent visuzalizarCampanha = new Intent(
+					this.getApplicationContext(),
+					VisualizarCampanhaActivity.class);
+			visuzalizarCampanha.putExtra(
+					VisualizarCampanhaActivity.EXTRA_MESSAGE,
+					String.valueOf(campanha.getIdentificador()));
+			startActivity(visuzalizarCampanha);
+		} else {
+			super.onBackPressed();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -100,7 +103,7 @@ public class EditarCampanhaActivity extends BaseActivity {
 		List<Cliente> clientes = new ArrayList<Cliente>();
 
 		campanha.setDescricao(txtDescricao.getText().toString().trim());
-		
+
 		if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
 			SelectViewAdapter<Cliente> selectAdapter = (SelectViewAdapter<Cliente>) grid_clientes
 					.getAdapter();
@@ -204,7 +207,8 @@ public class EditarCampanhaActivity extends BaseActivity {
 			NoSuchMethodException, NoSuchFieldException,
 			InvocationTargetException, BusinessException {
 		Intent intent = getIntent();
-		String id = intent.getStringExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE);
+		String id = intent
+				.getStringExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE);
 
 		CampanhaController campanhaController = new CampanhaController(true,
 				getBaseContext());
@@ -235,8 +239,8 @@ public class EditarCampanhaActivity extends BaseActivity {
 			grid_clientes.setVisibility(View.VISIBLE);
 			ViewGroup.LayoutParams layoutParams = grid_clientes
 					.getLayoutParams();
-			layoutParams.height = getTotalHeight(grid_clientes,
-					grid_clientes.getAdapter().getCount());
+			layoutParams.height = getTotalHeight(grid_clientes, grid_clientes
+					.getAdapter().getCount());
 			grid_clientes.setLayoutParams(layoutParams);
 			lblClientes.setVisibility(View.VISIBLE);
 			// TODO Ajustar a seleção de imagem
@@ -251,7 +255,7 @@ public class EditarCampanhaActivity extends BaseActivity {
 			txtMensagem.setVisibility(View.VISIBLE);
 			btnSelecionarImagem.setVisibility(View.GONE);
 			imageView1.setVisibility(View.GONE);
-			
+
 			if (campanha.getCaminhoImagem() == null) {
 				rbtTexto.setChecked(true);
 				txtMensagem.setText(campanha.getMensagem());
@@ -260,14 +264,14 @@ public class EditarCampanhaActivity extends BaseActivity {
 				txtMensagem.setVisibility(View.GONE);
 			}
 		}
-		
+
 		rbtTexto.setEnabled(false);
 		rbtImagem.setEnabled(false);
 		rbtAutomatico.setEnabled(false);
 
 		this.campanha = campanha;
 	}
-	
+
 	private int getTotalHeight(GridView gridView, int columns) {
 		ListAdapter listAdapter = gridView.getAdapter();
 		int totalHeight = 0;
