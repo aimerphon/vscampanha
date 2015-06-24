@@ -80,7 +80,6 @@ public class CampanhaController extends DatabaseManager {
 			situacao.setIdentificador(3);
 			entity.setSituacao(situacao);
 			rowsAffected = super.update(entity);
-			entity.setIdentificador(rowsAffected);
 
 			CampanhaClienteController<CampanhaCliente> campanhaClienteController = new CampanhaClienteController<CampanhaCliente>(
 					true, this.context);
