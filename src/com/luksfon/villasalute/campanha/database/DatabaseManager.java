@@ -399,7 +399,6 @@ public class DatabaseManager {
 		String[] pks = getColumnsPK(entity);
 		boolean firstPk = true;
 		Class<T> classEntity = (Class<T>) entity.getClass();
-		//String tableName = getTableName(classEntity);
 		String[] values = getValueKey(entity);
 		int index = 0;
 
