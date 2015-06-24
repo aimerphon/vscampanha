@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+import android.widget.ListView;
 
 import com.luksfon.villasalute.campanha.R;
 import com.luksfon.villasalute.campanha.controller.ClienteController;
@@ -44,7 +44,7 @@ public class ConsultaClientesActivity extends Activity {
 
 		ArrayList<Cliente> lista1 = clienteController.toList(Cliente.class);
 
-		GridView gridview = (GridView) findViewById(R.id.grid_cliente);
+		ListView gridview = (ListView) findViewById(R.id.grid_cliente);
 		gridview.setAdapter(new ListViewAdapter<Cliente>(this, lista1));
 
 		gridview.setOnItemClickListener(new OnItemClickListener() {

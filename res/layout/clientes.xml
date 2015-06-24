@@ -57,14 +57,17 @@
         android:text="@string/string_label_clientes"
         android:textAppearance="@style/TextMediumBlue" />
 
-    <GridView
+    <ListView
         android:id="@+id/grid_clientes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/lblClientes"
+        android:background="#ffffff"
+        android:divider="#fff3f3f3"
+        android:dividerHeight="3dp"
         android:horizontalSpacing="10dp"
         android:numColumns="1"
         android:verticalSpacing="1dp" >
-    </GridView>
+    </ListView>
 
 </RelativeLayout>

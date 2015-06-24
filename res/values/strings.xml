@@ -25,6 +25,7 @@
     <string name="msg_erro_selecione_imagem">Selecione uma imagem</string>
     <string name="msg_erro_selecione_item">Selecione pelo menos um item</string>
     <string name="msg_operacao_sucesso">Operação realizada por sucesso</string>
+    <string name="msg_sair_aplicativo">Tem certeza que quer sair do aplicativo?</string>
     <string name="order_by_nome">ORDER BY DsNome ASC</string>
     <string name="order_by_descricao_campanha">ORDER BY DsCampanha ASC</string>
     <string name="prefix_method_set">set</string>
@@ -61,5 +62,6 @@
     <string name="table_column_nome">DsNome</string>
     <string name="table_column_telefone">DsTelefone</string>
     <string name="title_activity_display_message">My Message</string>
+    <string name="title_sair_aplicativo">Sair aplicativo</string>
 
 </resources>

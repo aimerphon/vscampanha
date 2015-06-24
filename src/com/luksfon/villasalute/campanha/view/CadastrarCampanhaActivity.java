@@ -26,9 +26,8 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -49,7 +48,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 	private Button btnSelecionarImagem;
 	private EditText txtDescricao;
 	private EditText txtMensagem;
-	private GridView grid_clientes;
+	private ListView grid_clientes;
 	private ImageView imageView1;
 	private TextView lblClientes;
 	private TextView lblTipoMensagem;
@@ -61,6 +60,12 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 	private String selectedImagePath;
 	private byte[] byteImagem;
+	
+//	private String[] mFileList;
+//	private File mPath = new File(Environment.getExternalStorageDirectory() + "//villasalute//");
+//	private String mChosenFile;
+//	private static final String FTYPE = ".csv";    
+//	private static final int DIALOG_LOAD_FILE = 1000;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -131,7 +136,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				R.string.string_empty));
 		txtDescricao.setEnabled(true);
 		lblClientes = (TextView) findViewById(R.id.lblClientes);
-		grid_clientes = (GridView) findViewById(R.id.grid_clientes);
+		grid_clientes = (ListView) findViewById(R.id.grid_clientes);
 		imageView1 = (ImageView) findViewById(R.id.imageView1);
 		btnSelecionarImagem = (Button) findViewById(R.id.btnImagem);
 		btnSelecionarImagem.setVisibility(View.GONE);
@@ -191,6 +196,10 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				rbtTexto.setChecked(true);
 			}
 		});
+		
+		lblTipoMensagem.setVisibility(View.GONE);
+		txtMensagem.setVisibility(View.GONE);
+		rdgTipo.setVisibility(View.GONE);
 
 		CarregarGrid();
 
@@ -239,25 +248,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		});
 	}
 
-	public void setGridViewHeightBasedOnChildren(GridView gridView, int columns) {
-		int totalHeight = getTotalHeight(gridView, columns);
-		ViewGroup.LayoutParams params = gridView.getLayoutParams();
-		params.height = totalHeight;
-		gridView.setLayoutParams(params);
-	}
-
-	private int getTotalHeight(GridView gridView, int columns) {
-		ListAdapter listAdapter = gridView.getAdapter();
-		int totalHeight = 0;
-		int rows = gridView.getCount();
-
-		View listItem = listAdapter.getView(0, null, gridView);
-		listItem.measure(0, 0);
-		totalHeight = listItem.getMeasuredHeight();
-		totalHeight *= rows;
-
-		return totalHeight;
-	}
+	
 
 	private void CarregarGrid() throws InstantiationException,
 			IllegalAccessException, NoSuchFieldException,
@@ -266,10 +257,10 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		ClienteController<Cliente> clienteController = new ClienteController<Cliente>(
 				false, getBaseContext());
 
-		ArrayList<Cliente> lista1 = clienteController.toList(Cliente.class);
+		ArrayList<Cliente> clientes = clienteController.toList(Cliente.class);
 
-		grid_clientes.setAdapter(new SelectViewAdapter<Cliente>(this, lista1));
-		this.setGridViewHeightBasedOnChildren(grid_clientes, lista1.size());
+		grid_clientes.setAdapter(new SelectViewAdapter<Cliente>(this, clientes));
+		this.setGridViewHeightBasedOnChildren(grid_clientes, clientes.size());
 		grid_clientes.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,

@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.luksfon.villasalute.campanha.R;
@@ -32,7 +32,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	private boolean finalizado;
 	private boolean showMessage;
 	private Campanha campanha;
-	private GridView gridClientes;
+	private ListView gridClientes;
 	private int indiceUltimoClienteEnviado;
 	private TextView lblClientes;
 	private TextView txtTipoEnvio;
@@ -106,7 +106,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			InvocationTargetException, BusinessException {
 		txtDescricao = (TextView) findViewById(R.id.txtDescricao);
 		txtSituacao = (TextView) findViewById(R.id.txtSituacao);
-		gridClientes = (GridView) findViewById(R.id.grid_clientes);
+		gridClientes = (ListView) findViewById(R.id.grid_clientes);
 		txtTipoEnvio = (TextView) findViewById(R.id.txtTipoEnvio);
 		lblTipoMensagem = (TextView) findViewById(R.id.lblTipoMensagem);
 		txtTipoMensagem = (TextView) findViewById(R.id.txtTipoMensagem);
@@ -127,7 +127,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			NoSuchMethodException, NoSuchFieldException,
 			InvocationTargetException, BusinessException {
 		Intent intent = getIntent();
-		String id = intent.getStringExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE);
+		String id = intent
+				.getStringExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE);
 
 		CampanhaController campanhaController = new CampanhaController(true,
 				getBaseContext());
@@ -147,9 +148,12 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 					int position, long id) {
 				Intent visuzalizarCliente = new Intent(parent.getContext(),
 						VisualizarClienteActivity.class);
+				CampanhaCliente campanhaCliente = (CampanhaCliente) parent
+						.getItemAtPosition(position);
 				visuzalizarCliente.putExtra(
-						ConsultaClientesActivity.EXTRA_MESSAGE,
-						String.valueOf(parent.getItemIdAtPosition(position)));
+						ConsultaClientesActivity.EXTRA_MESSAGE, String
+								.valueOf(campanhaCliente.getCliente()
+										.getIdentificador()));
 				startActivity(visuzalizarCliente);
 			}
 		});
@@ -172,6 +176,9 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 					}
 					indiceUltimoClienteEnviado++;
 				}
+			} else if (SituacaoCampanha.ENVIADO.getValue() == campanha
+					.getSituacao().getIdentificador()) {
+				indiceUltimoClienteEnviado = campanha.getClientes().size();
 			}
 		} else {
 			txtTipoEnvio.setText(this.getApplicationContext().getString(
@@ -300,7 +307,9 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			CampanhaController campanhaController = new CampanhaController(
 					true, getApplicationContext());
 
-			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()
+					&& SituacaoCampanha.ENVIADO.getValue() != campanha
+							.getSituacao().getIdentificador()) {
 				indiceUltimoClienteEnviado = campanhaController
 						.campanhaEnviadaCliente(campanha,
 								indiceUltimoClienteEnviado);

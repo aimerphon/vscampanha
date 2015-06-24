@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,25 +51,24 @@ public class SelectViewAdapter<E extends ListViewEntityBase> extends
 	@SuppressWarnings("unchecked")
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-
 		if (convertView == null) {
-			viewHolder = new ViewHolder();
 			ViewGroup viewGroup = null;
 			convertView = layoutInflater
 					.inflate(R.layout.selectview, viewGroup);
 
-			viewHolder.textviewTitle = (TextView) convertView
-					.findViewById(R.id.txtTitle);
-			viewHolder.textviewSubTitle = (TextView) convertView
-					.findViewById(R.id.txtSubTitle);
-			viewHolder.labelviewTitle = (TextView) convertView
-					.findViewById(R.id.lblTitle);
-			viewHolder.labelviewSubTitle = (TextView) convertView
-					.findViewById(R.id.lblSubTitle);
+			viewHolder = new ViewHolder();
+
+			criarViewHolder(convertView);
 
 			convertView.setTag(viewHolder);
 		} else {
 			viewHolder = (ViewHolder) convertView.getTag();
+
+			if (viewHolder == null) {
+				viewHolder = new ViewHolder();
+				
+				criarViewHolder(convertView);
+			}
 		}
 
 		E item = dataSource.get(position);
@@ -76,11 +76,10 @@ public class SelectViewAdapter<E extends ListViewEntityBase> extends
 		viewHolder.textviewSubTitle.setText(item.getSubTitle());
 		viewHolder.labelviewTitle.setText(item.getLabelTitle());
 		viewHolder.labelviewSubTitle.setText(item.getLabelSubTitle());
-
-//		convertView.measure(View.MeasureSpec.makeMeasureSpec(
-//				View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
-//				View.MeasureSpec.makeMeasureSpec(0,
-//						View.MeasureSpec.UNSPECIFIED));
+		
+		if (checkeds[position]) {
+			convertView.setBackgroundColor(Color.rgb(255, 166, 76));
+		}
 
 		return convertView;
 	}
@@ -106,6 +105,37 @@ public class SelectViewAdapter<E extends ListViewEntityBase> extends
 		}
 
 		return lista;
+	}
+
+	private void criarViewHolder(View convertView) {
+		viewHolder.textviewTitle = (TextView) convertView
+
+		.findViewById(R.id.txtTitle);
+		viewHolder.textviewSubTitle = (TextView) convertView
+				.findViewById(R.id.txtSubTitle);
+		viewHolder.labelviewTitle = (TextView) convertView
+				.findViewById(R.id.lblTitle);
+		viewHolder.labelviewSubTitle = (TextView) convertView
+				.findViewById(R.id.lblSubTitle);
+	}
+
+	public void setSelectedItens(ArrayList<E> itens) {
+		int indice = -1;
+		ViewGroup viewGroup = null;
+		View view = null;
+		View convertView = layoutInflater
+				.inflate(R.layout.selectview, viewGroup);
+		
+		for (E item : itens) {
+			for (E itemLista : dataSource) {
+
+				if (itemLista.getId() == item.getId()) {
+					indice = dataSource.indexOf(itemLista);
+					checkeds[indice] = true;
+					selectedItems.put(item.getId(), item);
+				}
+			}
+		}
 	}
 
 	class ViewHolder {

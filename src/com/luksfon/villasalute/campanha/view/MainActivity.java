@@ -3,6 +3,7 @@ package com.luksfon.villasalute.campanha.view;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,7 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+import android.widget.ListView;
 
 import com.luksfon.villasalute.campanha.R;
 import com.luksfon.villasalute.campanha.controller.CampanhaController;
@@ -42,14 +43,14 @@ public class MainActivity extends BaseActivity {
 		CampanhaController campanhaController = new CampanhaController(true,
 				getBaseContext());
 
-		//campanhaController.executeSQL("alter table tCampanha add DsMensagem TEXT");
-//		campanhaController.executeSQL("alter table tCampanha add DsPathImagem TEXT");
-//		campanhaController.executeSQL("alter table tCampanha add StManual INTEGER");
-		//campanhaController.executeSQL("alter table tCampanha add BlImagem BLOB");
-		
+		// campanhaController.executeSQL("alter table tCampanha add DsMensagem TEXT");
+		// campanhaController.executeSQL("alter table tCampanha add DsPathImagem TEXT");
+		// campanhaController.executeSQL("alter table tCampanha add StManual INTEGER");
+		// campanhaController.executeSQL("alter table tCampanha add BlImagem BLOB");
+
 		ArrayList<Campanha> lista1 = campanhaController.toList(Campanha.class);
 
-		GridView gridview = (GridView) findViewById(R.id.grid_campanha);
+		ListView gridview = (ListView) findViewById(R.id.grid_campanha);
 		gridview.setAdapter(new ListViewAdapter<Campanha>(this, lista1));
 
 		gridview.setOnItemClickListener(new OnItemClickListener() {
@@ -58,7 +59,8 @@ public class MainActivity extends BaseActivity {
 					int position, long id) {
 				Intent visuzalizarCampanha = new Intent(parent.getContext(),
 						VisualizarCampanhaActivity.class);
-				visuzalizarCampanha.putExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE,
+				visuzalizarCampanha.putExtra(
+						VisualizarCampanhaActivity.EXTRA_MESSAGE,
 						String.valueOf(parent.getItemIdAtPosition(position)));
 				startActivity(visuzalizarCampanha);
 			}
@@ -102,7 +104,7 @@ public class MainActivity extends BaseActivity {
 	protected void onRestart() {
 		// TODO Auto-generated method stub
 		super.onRestart();
-		
+
 		try {
 			carregarTela();
 		} catch (InstantiationException e) {
@@ -127,5 +129,29 @@ public class MainActivity extends BaseActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		showConfirmationMessage(
+				getApplicationContext(),
+				getApplicationContext().getString(
+						R.string.title_sair_aplicativo),
+				getApplicationContext().getString(R.string.msg_sair_aplicativo),
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+						sair();
+					}
+				}, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
+	}
+	
+	private void sair() {
+		super.finish();
+		super.onDestroy();
 	}
 }
