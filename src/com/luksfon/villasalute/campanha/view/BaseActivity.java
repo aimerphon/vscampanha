@@ -5,6 +5,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface.OnClickListener;
 import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.luksfon.villasalute.campanha.R;
@@ -39,5 +43,25 @@ public class BaseActivity extends Activity {
 		builderAlert.setNegativeButton("Não", negativeListiner);
 		AlertDialog alertDialog = builderAlert.create();
 		alertDialog.show();
+	}
+	
+	protected void setGridViewHeightBasedOnChildren(ListView gridView, int columns) {
+		int totalHeight = getTotalHeight(gridView, columns);
+		ViewGroup.LayoutParams params = gridView.getLayoutParams();
+		params.height = totalHeight;
+		gridView.setLayoutParams(params);
+	}
+
+	protected int getTotalHeight(ListView gridView, int columns) {
+		ListAdapter listAdapter = gridView.getAdapter();
+		int totalHeight = 0;
+		int rows = gridView.getCount();
+
+		View listItem = listAdapter.getView(0, null, gridView);
+		listItem.measure(0, 0);
+		totalHeight = listItem.getMeasuredHeight();
+		totalHeight *= rows;
+
+		return totalHeight;
 	}
 }
