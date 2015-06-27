@@ -121,10 +121,6 @@ public class SelectViewAdapter<E extends ListViewEntityBase> extends
 
 	public void setSelectedItens(ArrayList<E> itens) {
 		int indice = -1;
-		ViewGroup viewGroup = null;
-		View view = null;
-		View convertView = layoutInflater
-				.inflate(R.layout.selectview, viewGroup);
 		
 		for (E item : itens) {
 			for (E itemLista : dataSource) {
