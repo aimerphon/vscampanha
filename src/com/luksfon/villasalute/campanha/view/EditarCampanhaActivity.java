@@ -36,6 +36,8 @@ import com.luksfon.villasalute.campanha.view.adapter.SelectViewAdapter;
 
 public class EditarCampanhaActivity extends BaseActivity {
 
+	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.EditarCampanhaActivity.MESSAGE";
+	
 	private Campanha campanha;
 	private Button btnSelecionarImagem;
 	private EditText txtDescricao;
@@ -56,6 +58,7 @@ public class EditarCampanhaActivity extends BaseActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.editar_campanha);
 		voltar = true;
+		
 		try {
 			inicializarTela();
 		} catch (Exception ex) {
@@ -84,13 +87,17 @@ public class EditarCampanhaActivity extends BaseActivity {
 	@Override
 	public void onBackPressed() {
 		if (!voltar) {
-			Intent visuzalizarCampanha = new Intent(
-					this.getApplicationContext(),
-					VisualizarCampanhaActivity.class);
+			//this.finish();
+			Intent visuzalizarCampanha = getIntent();
 			visuzalizarCampanha.putExtra(
 					VisualizarCampanhaActivity.EXTRA_MESSAGE,
 					String.valueOf(campanha.getIdentificador()));
-			startActivity(visuzalizarCampanha);
+			visuzalizarCampanha.putExtra(
+					VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR,
+					String.valueOf(campanha.getIdentificador()));
+			setResult(RESULT_OK, visuzalizarCampanha);
+			//startActivity(visuzalizarCampanha);
+			finish();
 		} else {
 			super.onBackPressed();
 		}
@@ -118,7 +125,17 @@ public class EditarCampanhaActivity extends BaseActivity {
 			campanhaController.editarCampanha(campanha, clientes);
 			super.showMessage(getApplication().getString(
 					R.string.msg_operacao_sucesso));
-			super.onBackPressed();
+			
+			Intent visuzalizarCampanha = getIntent();
+			visuzalizarCampanha.putExtra(
+					VisualizarCampanhaActivity.EXTRA_MESSAGE,
+					String.valueOf(campanha.getIdentificador()));
+			visuzalizarCampanha.putExtra(
+					VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR,
+					String.valueOf(campanha.getIdentificador()));
+			
+			//super.onBackPressed();
+			onBackPressed();
 		} catch (BusinessException e) {
 			showMessage(e.getMessage());
 			super.onBackPressed();

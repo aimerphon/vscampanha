@@ -17,6 +17,8 @@ import com.luksfon.villasalute.campanha.exception.BusinessException;
 
 public class VisualizarClienteActivity extends BaseActivity {
 
+	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.VisualizarClienteActivity.MESSAGE";
+	
 	private int IdCliente;
 	private TextView txtNome;
 	private TextView txtTelefone;
@@ -111,5 +113,15 @@ public class VisualizarClienteActivity extends BaseActivity {
 		showMessage(R.string.msg_operacao_sucesso);
 
 		super.onBackPressed();
+	}
+
+	@Override
+	public void onBackPressed() {
+		Intent visuzalizarCampanha = getIntent();
+		visuzalizarCampanha.putExtra(
+				VisualizarCampanhaActivity.EXTRA_MESSAGE_VISUALIZAR,
+				String.valueOf(IdCliente));
+		setResult(RESULT_OK, visuzalizarCampanha);
+		finish();
 	}
 }

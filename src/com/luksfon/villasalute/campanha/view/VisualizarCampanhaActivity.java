@@ -27,7 +27,11 @@ import com.luksfon.villasalute.campanha.view.adapter.ListViewAdapter;
 public class VisualizarCampanhaActivity extends BaseActivity {
 
 	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.VisualizarCampanhaActivity.MESSAGE";
+	public final static String EXTRA_MESSAGE_EDITAR = "com.luksfon.villasalute.campanha.view.VisualizarCampanhaActivity.EDITAR";
+	public final static String EXTRA_MESSAGE_VISUALIZAR = "com.luksfon.villasalute.campanha.view.VisualizarCampanhaActivity.VISUALIZARCLIENTE";
 	private static final int SELECT_PICTURE = 1;
+	public static final int EDITAR_CAMPANHA = 2;
+	public static final int VISUALIZAR_CLIENTE = 3;
 
 	private boolean finalizado;
 	private boolean showMessage;
@@ -43,6 +47,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	private TextView txtDescricao;
 	private TextView txtSituacao;
 	private Uri selectedImageUri;
+	private boolean fromEdit;
+	private boolean fromDetailClient;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -154,7 +160,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 						ConsultaClientesActivity.EXTRA_MESSAGE, String
 								.valueOf(campanhaCliente.getCliente()
 										.getIdentificador()));
-				startActivity(visuzalizarCliente);
+				startActivityForResult(visuzalizarCliente, VISUALIZAR_CLIENTE);
 			}
 		});
 
@@ -230,7 +236,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				EditarCampanhaActivity.class);
 		editarCampanha.putExtra(EXTRA_MESSAGE,
 				String.valueOf(campanha.getIdentificador()));
-		startActivity(editarCampanha);
+		startActivityForResult(editarCampanha, EDITAR_CAMPANHA);
 	}
 
 	protected void excluirCampanha() {
@@ -307,24 +313,27 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			CampanhaController campanhaController = new CampanhaController(
 					true, getApplicationContext());
 
-			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()
-					&& SituacaoCampanha.ENVIADO.getValue() != campanha
-							.getSituacao().getIdentificador()) {
-				indiceUltimoClienteEnviado = campanhaController
-						.campanhaEnviadaCliente(campanha,
-								indiceUltimoClienteEnviado);
+			if (!fromEdit && ! fromDetailClient) {
+				if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()
+						&& SituacaoCampanha.ENVIADO.getValue() != campanha
+								.getSituacao().getIdentificador()) {
+					indiceUltimoClienteEnviado = campanhaController
+							.campanhaEnviadaCliente(campanha,
+									indiceUltimoClienteEnviado);
 
-				if (indiceUltimoClienteEnviado < this.campanha.getClientes()
-						.size()) {
-					enviarCampanha();
-				} else {
-					finalizado = true;
-					super.showMessage(getApplicationContext().getString(
-							R.string.msg_operacao_sucesso));
-					super.onBackPressed();
+					if (indiceUltimoClienteEnviado < this.campanha
+							.getClientes().size()) {
+						enviarCampanha();
+					} else {
+						finalizado = true;
+						super.showMessage(getApplicationContext().getString(
+								R.string.msg_operacao_sucesso));
+						super.onBackPressed();
+					}
+				} else if (campanha.getTipoEnvio() == TipoEnvio.MANUAL
+						.getValue()) {
+					showConfirmation();
 				}
-			} else if (campanha.getTipoEnvio() == TipoEnvio.MANUAL.getValue()) {
-				showConfirmation();
 			}
 
 			try {
@@ -365,6 +374,9 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				i.putExtra(Intent.EXTRA_STREAM, selectedImageUri);
 				i.setPackage("com.whatsapp");
 				startActivity(Intent.createChooser(i, ""));
+			} else if (requestCode == EDITAR_CAMPANHA || requestCode == VISUALIZAR_CLIENTE) {
+				fromEdit = data.hasExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR);
+				fromDetailClient = data.hasExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE_VISUALIZAR);
 			}
 		}
 	}

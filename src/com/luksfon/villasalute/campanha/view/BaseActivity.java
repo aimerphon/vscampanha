@@ -44,8 +44,9 @@ public class BaseActivity extends Activity {
 		AlertDialog alertDialog = builderAlert.create();
 		alertDialog.show();
 	}
-	
-	protected void setGridViewHeightBasedOnChildren(ListView gridView, int columns) {
+
+	protected void setGridViewHeightBasedOnChildren(ListView gridView,
+			int columns) {
 		int totalHeight = getTotalHeight(gridView, columns);
 		ViewGroup.LayoutParams params = gridView.getLayoutParams();
 		params.height = totalHeight;
@@ -59,7 +60,7 @@ public class BaseActivity extends Activity {
 
 		View listItem = listAdapter.getView(0, null, gridView);
 		listItem.measure(0, 0);
-		totalHeight = listItem.getMeasuredHeight();
+		totalHeight = listItem.getMeasuredHeight() + 10;
 		totalHeight *= rows;
 
 		return totalHeight;
