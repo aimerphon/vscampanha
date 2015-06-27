@@ -18,6 +18,7 @@ import com.luksfon.villasalute.campanha.exception.BusinessException;
 public class VisualizarClienteActivity extends BaseActivity {
 
 	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.VisualizarClienteActivity.MESSAGE";
+	public static final int EDITAR_CLIENTE = 2;
 	
 	private int IdCliente;
 	private TextView txtNome;
@@ -26,9 +27,20 @@ public class VisualizarClienteActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		layoutResId = R.layout.visualizar_cliente;
+		
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.visualizar_cliente);
+	}
 
+	@Override
+	protected void inicializarTela() {
+		txtNome = (TextView) findViewById(R.id.txtNome);
+		txtTelefone = (TextView) findViewById(R.id.txtTelefone);
+		txtEmail = (TextView) findViewById(R.id.txtEmail);
+	}
+
+	@Override
+	protected void carregarTela() {
 		try {
 			Intent intent = getIntent();
 			String id = intent
@@ -41,13 +53,9 @@ public class VisualizarClienteActivity extends BaseActivity {
 			cliente.setIdentificador(IdCliente);
 			cliente = clienteDAL.get(cliente);
 
-			txtNome = (TextView) findViewById(R.id.txtNome);
-			txtTelefone = (TextView) findViewById(R.id.txtTelefone);
-			txtEmail = (TextView) findViewById(R.id.txtEmail);
 			txtNome.setText(cliente.getNome());
 			txtTelefone.setText(cliente.getTelefone());
-			txtEmail.setText(cliente.getEmail());
-
+			txtEmail.setText(cliente.getEmail());	
 		} catch (Exception ex) {
 			Log.println(0, VisualizarClienteActivity.class.toString(),
 					ex.getMessage());
@@ -56,7 +64,6 @@ public class VisualizarClienteActivity extends BaseActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.menu_editar_excluir, menu);
 		return true;
 	}
@@ -78,26 +85,36 @@ public class VisualizarClienteActivity extends BaseActivity {
 			super.showMessage(ex.getMessage());
 			return super.onOptionsItemSelected(item);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		}
 	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent visuzalizarCampanha = getIntent();
+		visuzalizarCampanha.putExtra(
+				VisualizarCampanhaActivity.EXTRA_MESSAGE_VISUALIZAR,
+				String.valueOf(IdCliente));
+		setResult(RESULT_OK, visuzalizarCampanha);
+		finish();
+	}
 
 	private void editarCliente() {
-		// TODO Implementar o editar cliente
+		Intent editarCliente = new Intent(this.getApplicationContext(),
+				EditarClienteActivity.class);
+		editarCliente.putExtra(EXTRA_MESSAGE,
+				String.valueOf(IdCliente));
+		startActivityForResult(editarCliente, EDITAR_CLIENTE);
 	}
 
 	private void excluirCliente() throws IllegalAccessException,
@@ -113,15 +130,5 @@ public class VisualizarClienteActivity extends BaseActivity {
 		showMessage(R.string.msg_operacao_sucesso);
 
 		super.onBackPressed();
-	}
-
-	@Override
-	public void onBackPressed() {
-		Intent visuzalizarCampanha = getIntent();
-		visuzalizarCampanha.putExtra(
-				VisualizarCampanhaActivity.EXTRA_MESSAGE_VISUALIZAR,
-				String.valueOf(IdCliente));
-		setResult(RESULT_OK, visuzalizarCampanha);
-		finish();
 	}
 }

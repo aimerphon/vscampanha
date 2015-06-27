@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface.OnClickListener;
+import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +14,24 @@ import android.widget.Toast;
 
 import com.luksfon.villasalute.campanha.R;
 
-public class BaseActivity extends Activity {
+public abstract class BaseActivity extends Activity {
+
+	protected int layoutResId;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		setContentView(layoutResId);
+
+		inicializarTela();
+
+		carregarTela();
+	}
+
+	protected abstract void inicializarTela();
+
+	protected abstract void carregarTela();
 
 	protected void showMessage(int resourceId) {
 		Toast toast = Toast.makeText(getApplicationContext(), resourceId,

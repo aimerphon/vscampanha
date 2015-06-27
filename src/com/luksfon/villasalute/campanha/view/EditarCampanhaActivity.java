@@ -7,7 +7,6 @@ import java.util.List;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +36,7 @@ import com.luksfon.villasalute.campanha.view.adapter.SelectViewAdapter;
 public class EditarCampanhaActivity extends BaseActivity {
 
 	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.EditarCampanhaActivity.MESSAGE";
-	
+
 	private Campanha campanha;
 	private Button btnSelecionarImagem;
 	private EditText txtDescricao;
@@ -51,20 +50,28 @@ public class EditarCampanhaActivity extends BaseActivity {
 	private RadioButton rbtManual;
 	private RadioButton rbtAutomatico;
 	private RadioGroup rdgTipo;
-	private boolean voltar;
+//	private boolean voltar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.editar_campanha);
-		voltar = true;
+//		voltar = true;
+		layoutResId = R.layout.editar_campanha;
 		
-		try {
-			inicializarTela();
-		} catch (Exception ex) {
-			Log.println(0, "EditarCampanhaActivity.onCreate", ex.getMessage());
-		}
+		super.onCreate(savedInstanceState);
 	}
+
+	// @Override
+	// protected void onCreate(Bundle savedInstanceState) {
+	// super.onCreate(savedInstanceState);
+	// setContentView(R.layout.editar_campanha);
+	// voltar = true;
+	//
+	// try {
+	// inicializarTela();
+	// } catch (Exception ex) {
+	// Log.println(0, "EditarCampanhaActivity.onCreate", ex.getMessage());
+	// }
+	// }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -76,7 +83,7 @@ public class EditarCampanhaActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_accept:
-			voltar = false;
+//			voltar = false;
 			editarCampanha();
 			return true;
 		default:
@@ -86,8 +93,7 @@ public class EditarCampanhaActivity extends BaseActivity {
 
 	@Override
 	public void onBackPressed() {
-		if (!voltar) {
-			//this.finish();
+//		if (!voltar) {
 			Intent visuzalizarCampanha = getIntent();
 			visuzalizarCampanha.putExtra(
 					VisualizarCampanhaActivity.EXTRA_MESSAGE,
@@ -96,11 +102,10 @@ public class EditarCampanhaActivity extends BaseActivity {
 					VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR,
 					String.valueOf(campanha.getIdentificador()));
 			setResult(RESULT_OK, visuzalizarCampanha);
-			//startActivity(visuzalizarCampanha);
 			finish();
-		} else {
-			super.onBackPressed();
-		}
+//		} else {
+//			super.onBackPressed();
+//		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -125,7 +130,7 @@ public class EditarCampanhaActivity extends BaseActivity {
 			campanhaController.editarCampanha(campanha, clientes);
 			super.showMessage(getApplication().getString(
 					R.string.msg_operacao_sucesso));
-			
+
 			Intent visuzalizarCampanha = getIntent();
 			visuzalizarCampanha.putExtra(
 					VisualizarCampanhaActivity.EXTRA_MESSAGE,
@@ -133,8 +138,8 @@ public class EditarCampanhaActivity extends BaseActivity {
 			visuzalizarCampanha.putExtra(
 					VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR,
 					String.valueOf(campanha.getIdentificador()));
-			
-			//super.onBackPressed();
+
+			// super.onBackPressed();
 			onBackPressed();
 		} catch (BusinessException e) {
 			showMessage(e.getMessage());
@@ -142,10 +147,8 @@ public class EditarCampanhaActivity extends BaseActivity {
 		}
 	}
 
-	protected void inicializarTela() throws ClassNotFoundException,
-			IllegalAccessException, InstantiationException,
-			NoSuchMethodException, NoSuchFieldException,
-			InvocationTargetException, BusinessException {
+	@Override
+	protected void inicializarTela() {
 		txtDescricao = (EditText) findViewById(R.id.txtDescricao);
 		lblTipoMensagem = (TextView) findViewById(R.id.lblTipoMensagem);
 		rdgTipo = (RadioGroup) findViewById(R.id.rdgTipo);
@@ -215,107 +218,107 @@ public class EditarCampanhaActivity extends BaseActivity {
 				rdgTipo.setVisibility(View.GONE);
 			}
 		});
-
-		carregarTela();
 	}
 
-	protected void carregarTela() throws ClassNotFoundException,
-			IllegalAccessException, InstantiationException,
-			NoSuchMethodException, NoSuchFieldException,
-			InvocationTargetException, BusinessException {
-		Intent intent = getIntent();
-		String id = intent
-				.getStringExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE);
+	protected void carregarTela() {
+		try {
+			Intent intent = getIntent();
+			String id = intent
+					.getStringExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE);
 
-		CampanhaController campanhaController = new CampanhaController(true,
-				getBaseContext());
+			CampanhaController campanhaController = new CampanhaController(
+					true, getBaseContext());
 
-		Campanha campanha = new Campanha();
-		campanha.setIdentificador(Integer.parseInt(id));
+			Campanha campanha = new Campanha();
+			campanha.setIdentificador(Integer.parseInt(id));
 
-		campanha = campanhaController.get(campanha);
+			campanha = campanhaController.get(campanha);
 
-		txtDescricao.setText(campanha.getDescricao());
-//		grid_clientes.setAdapter(new ListViewAdapter<CampanhaCliente>(this,
-//				campanha.getClientes()));
-//		grid_clientes.setOnItemClickListener(new OnItemClickListener() {
-//			@Override
-//			public void onItemClick(AdapterView<?> parent, View view,
-//					int position, long id) {
-//				Intent visuzalizarCliente = new Intent(parent.getContext(),
-//						VisualizarClienteActivity.class);
-//				visuzalizarCliente.putExtra(
-//						ConsultaClientesActivity.EXTRA_MESSAGE,
-//						String.valueOf(parent.getItemIdAtPosition(position)));
-//				startActivity(visuzalizarCliente);
-//			}
-//		});
-		
-		ArrayList<Cliente> clientes = new ClienteController<Cliente>(true, getApplicationContext()).toList(Cliente.class);
+			txtDescricao.setText(campanha.getDescricao());
 
-		SelectViewAdapter<Cliente> adapter = new SelectViewAdapter<Cliente>(this, clientes);
-		
-		ArrayList<Cliente> clientesSelecionados = new ArrayList<Cliente>();
-		
-		for (CampanhaCliente campanhacliente : campanha.getClientes()){
-			clientesSelecionados.add(campanhacliente.getCliente());
-		}
-		
-		grid_clientes.setAdapter(adapter);
-		this.setGridViewHeightBasedOnChildren(grid_clientes, clientes.size());
-		grid_clientes.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				boolean checked = ((SelectViewAdapter<?>) parent.getAdapter())
-						.selecionarItem(position);
-				if (checked) {
-					view.setBackgroundColor(Color.rgb(255, 204, 153));
-					view.setBackgroundColor(Color.rgb(255, 166, 76));
+			ArrayList<Cliente> clientes = new ClienteController<Cliente>(true,
+					getApplicationContext()).toList(Cliente.class);
+
+			SelectViewAdapter<Cliente> adapter = new SelectViewAdapter<Cliente>(
+					this, clientes);
+
+			ArrayList<Cliente> clientesSelecionados = new ArrayList<Cliente>();
+
+			for (CampanhaCliente campanhacliente : campanha.getClientes()) {
+				clientesSelecionados.add(campanhacliente.getCliente());
+			}
+
+			grid_clientes.setAdapter(adapter);
+			this.setGridViewHeightBasedOnChildren(grid_clientes,
+					clientes.size());
+			grid_clientes.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					boolean checked = ((SelectViewAdapter<?>) parent
+							.getAdapter()).selecionarItem(position);
+					if (checked) {
+						view.setBackgroundColor(Color.rgb(255, 204, 153));
+						view.setBackgroundColor(Color.rgb(255, 166, 76));
+					} else {
+						view.setBackgroundColor(Color.TRANSPARENT);
+					}
+				}
+			});
+
+			adapter.setSelectedItens(clientesSelecionados);
+
+			if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
+				rbtAutomatico.setChecked(true);
+				grid_clientes.setVisibility(View.VISIBLE);
+				ViewGroup.LayoutParams layoutParams = grid_clientes
+						.getLayoutParams();
+				layoutParams.height = getTotalHeight(grid_clientes,
+						grid_clientes.getAdapter().getCount());
+				grid_clientes.setLayoutParams(layoutParams);
+				lblClientes.setVisibility(View.VISIBLE);
+				// TODO Ajustar a seleção de imagem
+				lblTipoMensagem.setVisibility(View.GONE);
+				txtMensagem.setVisibility(View.GONE);
+				rdgTipo.setVisibility(View.GONE);
+			} else {
+				grid_clientes.setVisibility(View.GONE);
+				lblClientes.setVisibility(View.GONE);
+				lblTipoMensagem.setVisibility(View.VISIBLE);
+				rdgTipo.setVisibility(View.VISIBLE);
+				txtMensagem.setVisibility(View.VISIBLE);
+				btnSelecionarImagem.setVisibility(View.GONE);
+				imageView1.setVisibility(View.GONE);
+
+				if (campanha.getCaminhoImagem() == null) {
+					rbtTexto.setChecked(true);
+					txtMensagem.setText(campanha.getMensagem());
 				} else {
-					view.setBackgroundColor(Color.TRANSPARENT);
+					rbtImagem.setChecked(true);
+					txtMensagem.setVisibility(View.GONE);
 				}
 			}
-		});
-		
-		adapter.setSelectedItens(clientesSelecionados);
 
-		if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
-			rbtAutomatico.setChecked(true);
-			grid_clientes.setVisibility(View.VISIBLE);
-			ViewGroup.LayoutParams layoutParams = grid_clientes
-					.getLayoutParams();
-			layoutParams.height = getTotalHeight(grid_clientes, grid_clientes
-					.getAdapter().getCount());
-			grid_clientes.setLayoutParams(layoutParams);
-			lblClientes.setVisibility(View.VISIBLE);
-			// TODO Ajustar a seleção de imagem
-			lblTipoMensagem.setVisibility(View.GONE);
-			txtMensagem.setVisibility(View.GONE);
-			rdgTipo.setVisibility(View.GONE);
-		} else {
-			grid_clientes.setVisibility(View.GONE);
-			lblClientes.setVisibility(View.GONE);
-			lblTipoMensagem.setVisibility(View.VISIBLE);
-			rdgTipo.setVisibility(View.VISIBLE);
-			txtMensagem.setVisibility(View.VISIBLE);
-			btnSelecionarImagem.setVisibility(View.GONE);
-			imageView1.setVisibility(View.GONE);
+			rbtTexto.setEnabled(false);
+			rbtImagem.setEnabled(false);
+			rbtAutomatico.setEnabled(false);
+			rbtManual.setEnabled(false);
 
-			if (campanha.getCaminhoImagem() == null) {
-				rbtTexto.setChecked(true);
-				txtMensagem.setText(campanha.getMensagem());
-			} else {
-				rbtImagem.setChecked(true);
-				txtMensagem.setVisibility(View.GONE);
-			}
+			this.campanha = campanha;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (BusinessException e) {
+			e.printStackTrace();
 		}
-
-		rbtTexto.setEnabled(false);
-		rbtImagem.setEnabled(false);
-		rbtAutomatico.setEnabled(false);
-		rbtManual.setEnabled(false);
-
-		this.campanha = campanha;
 	}
 }

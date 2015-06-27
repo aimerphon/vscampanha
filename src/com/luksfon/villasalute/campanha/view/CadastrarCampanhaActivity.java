@@ -60,23 +60,19 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 	private String selectedImagePath;
 	private byte[] byteImagem;
-	
-//	private String[] mFileList;
-//	private File mPath = new File(Environment.getExternalStorageDirectory() + "//villasalute//");
-//	private String mChosenFile;
-//	private static final String FTYPE = ".csv";    
-//	private static final int DIALOG_LOAD_FILE = 1000;
+
+	// private String[] mFileList;
+	// private File mPath = new File(Environment.getExternalStorageDirectory() +
+	// "//villasalute//");
+	// private String mChosenFile;
+	// private static final String FTYPE = ".csv";
+	// private static final int DIALOG_LOAD_FILE = 1000;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		layoutResId = R.layout.cadastrar_campanha;
+		
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.cadastrar_campanha);
-
-		try {
-			inicializarTela();
-		} catch (Exception ex) {
-			Log.println(0, "CadastrarCampanhaActivity.onCreate", ex.getMessage());
-		}
 	}
 
 	@Override
@@ -99,46 +95,47 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 			super.showMessage(ex.getMessage());
 			return super.onOptionsItemSelected(item);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		}
 	}
 
-	private void inicializarTela() throws InstantiationException,
-			IllegalAccessException, NoSuchFieldException,
-			NoSuchMethodException, InvocationTargetException,
-			ClassNotFoundException, BusinessException {
+	@Override
+	protected void inicializarTela() {
 		txtDescricao = (EditText) findViewById(R.id.txtDescricao);
 		lblTipoMensagem = (TextView) findViewById(R.id.lblTipoMensagem);
 		rdgTipo = (RadioGroup) findViewById(R.id.rdgTipo);
-		txtDescricao.setText(this.getApplicationContext().getString(
-				R.string.string_empty));
-		txtDescricao.setEnabled(true);
 		lblClientes = (TextView) findViewById(R.id.lblClientes);
 		grid_clientes = (ListView) findViewById(R.id.grid_clientes);
 		imageView1 = (ImageView) findViewById(R.id.imageView1);
 		btnSelecionarImagem = (Button) findViewById(R.id.btnImagem);
+		txtMensagem = (EditText) findViewById(R.id.txtMensagem);
+		rbtImagem = (RadioButton) findViewById(R.id.rbtImagem);
+		rbtTexto = (RadioButton) findViewById(R.id.rbtTexto);
+		rbtAutomatico = (RadioButton) findViewById(R.id.rbtAutomatico);
+		rbtManual = (RadioButton) findViewById(R.id.rbtManual);
+	}
+
+	@Override
+	protected void carregarTela() {
+		txtDescricao.setText(this.getApplicationContext().getString(
+				R.string.string_empty));
+		txtDescricao.setEnabled(true);
 		btnSelecionarImagem.setVisibility(View.GONE);
 		btnSelecionarImagem.setOnClickListener(new OnClickListener() {
 			@Override
@@ -146,10 +143,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				selecionarImagem();
 			}
 		});
-		
-		txtMensagem = (EditText) findViewById(R.id.txtMensagem);
 
-		rbtImagem = (RadioButton) findViewById(R.id.rbtImagem);
 		rbtImagem.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
@@ -161,7 +155,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 			}
 		});
 
-		rbtTexto = (RadioButton) findViewById(R.id.rbtTexto);
 		rbtTexto.setChecked(true);
 		rbtTexto.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -170,17 +163,16 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				txtMensagem.setEnabled(false);
 				txtMensagem.setText(getApplicationContext().getString(
 						R.string.string_empty));
-				//btnSelecionarImagem.setVisibility(View.VISIBLE);
-				//btnSelecionarImagem.setEnabled(true);
-				//imageView1.setVisibility(View.VISIBLE);
-				//imageView1.setImageDrawable(null);
-//				selectedImagePath = getApplicationContext().getString(
-//						R.string.string_empty);
+				// btnSelecionarImagem.setVisibility(View.VISIBLE);
+				// btnSelecionarImagem.setEnabled(true);
+				// imageView1.setVisibility(View.VISIBLE);
+				// imageView1.setImageDrawable(null);
+				// selectedImagePath = getApplicationContext().getString(
+				// R.string.string_empty);
 				selectedImagePath = "imagem";
 			}
 		});
 
-		rbtAutomatico = (RadioButton) findViewById(R.id.rbtAutomatico);
 		rbtAutomatico.setChecked(true);
 		rbtAutomatico.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
@@ -196,14 +188,13 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				rbtTexto.setChecked(true);
 			}
 		});
-		
+
 		lblTipoMensagem.setVisibility(View.GONE);
 		txtMensagem.setVisibility(View.GONE);
 		rdgTipo.setVisibility(View.GONE);
 
 		CarregarGrid();
 
-		rbtManual = (RadioButton) findViewById(R.id.rbtManual);
 		rbtManual.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
@@ -220,61 +211,53 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				txtMensagem.setVisibility(View.GONE);
 				rdgTipo.setVisibility(View.GONE);
 
-				try {
-					CarregarGrid();
-				} catch (InstantiationException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoSuchFieldException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (BusinessException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				CarregarGrid();
 			}
 		});
 	}
 
-	
+	private void CarregarGrid() {
+		try {
+			ClienteController<Cliente> clienteController = new ClienteController<Cliente>(
+					false, getBaseContext());
 
-	private void CarregarGrid() throws InstantiationException,
-			IllegalAccessException, NoSuchFieldException,
-			NoSuchMethodException, InvocationTargetException,
-			ClassNotFoundException, BusinessException {
-		ClienteController<Cliente> clienteController = new ClienteController<Cliente>(
-				false, getBaseContext());
+			ArrayList<Cliente> clientes = clienteController
+					.toList(Cliente.class);
 
-		ArrayList<Cliente> clientes = clienteController.toList(Cliente.class);
-
-		grid_clientes.setAdapter(new SelectViewAdapter<Cliente>(this, clientes));
-		this.setGridViewHeightBasedOnChildren(grid_clientes, clientes.size());
-		grid_clientes.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				boolean checked = ((SelectViewAdapter<?>) parent.getAdapter())
-						.selecionarItem(position);
-				if (checked) {
-					view.setBackgroundColor(Color.rgb(255, 204, 153));
-					view.setBackgroundColor(Color.rgb(255, 166, 76));
-				} else {
-					view.setBackgroundColor(Color.TRANSPARENT);
+			grid_clientes.setAdapter(new SelectViewAdapter<Cliente>(this,
+					clientes));
+			this.setGridViewHeightBasedOnChildren(grid_clientes,
+					clientes.size());
+			grid_clientes.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					boolean checked = ((SelectViewAdapter<?>) parent
+							.getAdapter()).selecionarItem(position);
+					if (checked) {
+						view.setBackgroundColor(Color.rgb(255, 204, 153));
+						view.setBackgroundColor(Color.rgb(255, 166, 76));
+					} else {
+						view.setBackgroundColor(Color.TRANSPARENT);
+					}
 				}
-			}
-		});
+			});
+
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (BusinessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -393,10 +376,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 						byteImagem = stream.toByteArray();
 					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				} else {
@@ -413,10 +394,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 						byteImagem = stream.toByteArray();
 					} catch (FileNotFoundException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					} catch (IOException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}

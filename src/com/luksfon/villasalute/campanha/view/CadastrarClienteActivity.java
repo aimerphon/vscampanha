@@ -17,15 +17,24 @@ public class CadastrarClienteActivity extends BaseActivity {
 	private EditText txtNome;
 	private EditText txtTelefone;
 	private EditText txtEmail;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		layoutResId = R.layout.cadastrar_cliente;
+		
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.cadastrar_cliente);
+	}
+	
 
+	@Override
+	protected void inicializarTela() {
 		txtNome = (EditText) findViewById(R.id.txtNome);
 		txtTelefone = (EditText) findViewById(R.id.lblTelefone1);
 		txtEmail = (EditText) findViewById(R.id.txtEmail);
+	}
+
+	@Override
+	protected void carregarTela() {
 	}
 
 	@Override
@@ -48,23 +57,18 @@ public class CadastrarClienteActivity extends BaseActivity {
 			super.showMessage(ex.getMessage());
 			return super.onOptionsItemSelected(item);
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return super.onOptionsItemSelected(item);
 		}

@@ -31,8 +31,12 @@ public class ClienteController<E extends EntityBase> extends DatabaseManager {
 			BusinessException {
 		int id = -1;
 		try {
-			addContact((Cliente) entity, contentResolver);
+			beginTransaction();
+
 			id = super.insert(entity);
+			addContact((Cliente) entity, contentResolver);
+
+			saveChanges();
 		} catch (Exception ex) {
 			Log.println(0, "insert", ex.getMessage());
 		}
@@ -43,8 +47,24 @@ public class ClienteController<E extends EntityBase> extends DatabaseManager {
 			ContentResolver contentResolver) throws BusinessException,
 			IllegalAccessException, NoSuchMethodException,
 			IllegalArgumentException, InvocationTargetException {
+		beginTransaction();
+
+		int id = super.delete(entity);
 		deleteContact((Cliente) entity, contentResolver);
-		return super.delete(entity);
+		saveChanges();
+		return id;
+	}
+
+	public <T extends EntityBase> int edit(T entity,
+			ContentResolver contentResolver) throws IllegalAccessException,
+			IllegalArgumentException, NoSuchMethodException,
+			InvocationTargetException, ClassNotFoundException,
+			BusinessException {
+		beginTransaction();
+		this.delete(entity, contentResolver);
+		int id = this.insert(entity, contentResolver);
+		saveChanges();
+		return id;
 	}
 
 	private void addContact(Cliente cliente, ContentResolver contentResolver) {
@@ -86,30 +106,6 @@ public class ClienteController<E extends EntityBase> extends DatabaseManager {
 					.build());
 		}
 
-		// ------------------------------------------------------ Home Numbers
-		// if (HomeNumber != null) {
-		// ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-		// .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-		// .withValue(ContactsContract.Data.MIMETYPE,
-		// ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-		// .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, HomeNumber)
-		// .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
-		// ContactsContract.CommonDataKinds.Phone.TYPE_HOME)
-		// .build());
-		// }
-
-		// ------------------------------------------------------ Work Numbers
-		// if (WorkNumber != null) {
-		// ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-		// .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-		// .withValue(ContactsContract.Data.MIMETYPE,
-		// ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
-		// .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, WorkNumber)
-		// .withValue(ContactsContract.CommonDataKinds.Phone.TYPE,
-		// ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
-		// .build());
-		// }
-
 		// ------------------------------------------------------ Email
 		if (cliente.getEmail() != null) {
 			ops.add(ContentProviderOperation
@@ -126,24 +122,6 @@ public class ClienteController<E extends EntityBase> extends DatabaseManager {
 					.build());
 		}
 
-		// ------------------------------------------------------ Organization
-		// if (!company.equals("") && !jobTitle.equals("")) {
-		// ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
-		// .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
-		// .withValue(ContactsContract.Data.MIMETYPE,
-		// ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
-		// .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY,
-		// company)
-		// .withValue(ContactsContract.CommonDataKinds.Organization.TYPE,
-		// ContactsContract.CommonDataKinds.Organization.TYPE_WORK)
-		// .withValue(ContactsContract.CommonDataKinds.Organization.TITLE,
-		// jobTitle)
-		// .withValue(ContactsContract.CommonDataKinds.Organization.TYPE,
-		// ContactsContract.CommonDataKinds.Organization.TYPE_WORK)
-		// .build());
-		// }
-
-		// Asking the Contact provider to create a new contact
 		try {
 			contentResolver.applyBatch(ContactsContract.AUTHORITY, ops);
 		} catch (Exception e) {

@@ -79,6 +79,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.luksfon.villasalute.campanha.view.ConsultaClientesActivity" />
         </activity>
+        <activity
+            android:name="com.luksfon.villasalute.campanha.view.EditarClienteActivity"
+            android:label="@string/app_name"
+            android:parentActivityName="com.luksfon.villasalute.campanha.view.VisualizarClientesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.luksfon.villasalute.campanha.view.VisualizarClientesActivity" />
+        </activity>
     </application>
 
 </manifest>

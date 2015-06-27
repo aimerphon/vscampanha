@@ -29,12 +29,16 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.VisualizarCampanhaActivity.MESSAGE";
 	public final static String EXTRA_MESSAGE_EDITAR = "com.luksfon.villasalute.campanha.view.VisualizarCampanhaActivity.EDITAR";
 	public final static String EXTRA_MESSAGE_VISUALIZAR = "com.luksfon.villasalute.campanha.view.VisualizarCampanhaActivity.VISUALIZARCLIENTE";
+	public final static String EXTRA_MESSAGE_WHATSAPP = "com.luksfon.villasalute.campanha.view.VisualizarCampanhaActivity.WHATSAPP";
 	private static final int SELECT_PICTURE = 1;
 	public static final int EDITAR_CAMPANHA = 2;
 	public static final int VISUALIZAR_CLIENTE = 3;
+	public static final int WHATSAPP = 4;
+	public static final int RESULT_WHATSAPP = 0;
 
 	private boolean finalizado;
 	private boolean showMessage;
+	private boolean isWhatsApp;
 	private Campanha campanha;
 	private ListView gridClientes;
 	private int indiceUltimoClienteEnviado;
@@ -52,33 +56,9 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		layoutResId = R.layout.visualizar_campanha;
+		
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.visualizar_campanha);
-
-		try {
-			inicializarTela();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BusinessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	private void showConfirmation() {
@@ -106,10 +86,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 		showMessage = false;
 	}
 
-	protected void inicializarTela() throws ClassNotFoundException,
-			IllegalAccessException, InstantiationException,
-			NoSuchMethodException, NoSuchFieldException,
-			InvocationTargetException, BusinessException {
+	@Override
+	protected void inicializarTela() {
 		txtDescricao = (TextView) findViewById(R.id.txtDescricao);
 		txtSituacao = (TextView) findViewById(R.id.txtSituacao);
 		gridClientes = (ListView) findViewById(R.id.grid_clientes);
@@ -119,93 +97,95 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 		lblMensagem = (TextView) findViewById(R.id.lblMensagem);
 		txtMensagem = (TextView) findViewById(R.id.txtMensagem);
 		lblClientes = (TextView) findViewById(R.id.lblClientes);
-
-		carregarTela();
-
-		if (this.campanha.getClientes() == null
-				|| this.campanha.getClientes().isEmpty()) {
-			indiceUltimoClienteEnviado = -1;
-		}
 	}
 
-	protected void carregarTela() throws ClassNotFoundException,
-			IllegalAccessException, InstantiationException,
-			NoSuchMethodException, NoSuchFieldException,
-			InvocationTargetException, BusinessException {
-		Intent intent = getIntent();
-		String id = intent
-				.getStringExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE);
+	@Override
+	protected void carregarTela() {
+		try {
+			Intent intent = getIntent();
+			String id = intent
+					.getStringExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE);
 
-		CampanhaController campanhaController = new CampanhaController(true,
-				getBaseContext());
+			CampanhaController campanhaController = new CampanhaController(
+					true, getBaseContext());
 
-		Campanha campanha = new Campanha();
-		campanha.setIdentificador(Integer.parseInt(id));
+			Campanha campanha = new Campanha();
+			campanha.setIdentificador(Integer.parseInt(id));
 
-		campanha = campanhaController.get(campanha);
+			campanha = campanhaController.get(campanha);
 
-		txtDescricao.setText(campanha.getDescricao());
-		txtSituacao.setText(campanha.getSituacao().getDescricao());
-		gridClientes.setAdapter(new ListViewAdapter<CampanhaCliente>(this,
-				campanha.getClientes()));
-		gridClientes.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Intent visuzalizarCliente = new Intent(parent.getContext(),
-						VisualizarClienteActivity.class);
-				CampanhaCliente campanhaCliente = (CampanhaCliente) parent
-						.getItemAtPosition(position);
-				visuzalizarCliente.putExtra(
-						ConsultaClientesActivity.EXTRA_MESSAGE, String
-								.valueOf(campanhaCliente.getCliente()
-										.getIdentificador()));
-				startActivityForResult(visuzalizarCliente, VISUALIZAR_CLIENTE);
-			}
-		});
+			this.campanha = campanha;
 
-		if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
-			txtTipoEnvio.setText(this.getApplicationContext().getString(
-					R.string.string_label_direto));
-			lblTipoMensagem.setVisibility(View.GONE);
-			txtTipoMensagem.setVisibility(View.GONE);
-			lblMensagem.setVisibility(View.GONE);
-			txtMensagem.setVisibility(View.GONE);
-
-			if (SituacaoCampanha.ENVIANDO.getValue() == campanha.getSituacao()
-					.getIdentificador()) {
-				indiceUltimoClienteEnviado = 0;
-				for (CampanhaCliente campanhaCliente : campanha.getClientes()) {
-					if (SituacaoCampanha.NAO_ENVIADO.getValue() == campanhaCliente
-							.getSituacao().getIdentificador()) {
-						break;
-					}
-					indiceUltimoClienteEnviado++;
+			txtDescricao.setText(campanha.getDescricao());
+			txtSituacao.setText(campanha.getSituacao().getDescricao());
+			gridClientes.setAdapter(new ListViewAdapter<CampanhaCliente>(this,
+					campanha.getClientes()));
+			gridClientes.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					Intent visuzalizarCliente = new Intent(parent.getContext(),
+							VisualizarClienteActivity.class);
+					CampanhaCliente campanhaCliente = (CampanhaCliente) parent
+							.getItemAtPosition(position);
+					visuzalizarCliente.putExtra(
+							ConsultaClientesActivity.EXTRA_MESSAGE, String
+									.valueOf(campanhaCliente.getCliente()
+											.getIdentificador()));
+					startActivityForResult(visuzalizarCliente,
+							VISUALIZAR_CLIENTE);
 				}
-			} else if (SituacaoCampanha.ENVIADO.getValue() == campanha
-					.getSituacao().getIdentificador()) {
-				indiceUltimoClienteEnviado = campanha.getClientes().size();
-			}
-		} else {
-			txtTipoEnvio.setText(this.getApplicationContext().getString(
-					R.string.string_label_manual));
+			});
 
-			if (campanha.getCaminhoImagem() == null) {
-				txtTipoMensagem.setText(this.getApplicationContext().getString(
-						R.string.string_label_texto));
-				txtMensagem.setText(campanha.getMensagem());
-			} else {
-				txtTipoMensagem.setText(this.getApplicationContext().getString(
-						R.string.string_label_imagem));
+			if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
+				txtTipoEnvio.setText(this.getApplicationContext().getString(
+						R.string.string_label_direto));
+				lblTipoMensagem.setVisibility(View.GONE);
+				txtTipoMensagem.setVisibility(View.GONE);
 				lblMensagem.setVisibility(View.GONE);
 				txtMensagem.setVisibility(View.GONE);
+
+				obterUltimoEnviado();
+			} else {
+				txtTipoEnvio.setText(this.getApplicationContext().getString(
+						R.string.string_label_manual));
+
+				if (campanha.getCaminhoImagem() == null) {
+					txtTipoMensagem.setText(this.getApplicationContext()
+							.getString(R.string.string_label_texto));
+					txtMensagem.setText(campanha.getMensagem());
+				} else {
+					txtTipoMensagem.setText(this.getApplicationContext()
+							.getString(R.string.string_label_imagem));
+					lblMensagem.setVisibility(View.GONE);
+					txtMensagem.setVisibility(View.GONE);
+				}
+
+				lblClientes.setVisibility(View.GONE);
+				gridClientes.setVisibility(View.GONE);
 			}
 
-			lblClientes.setVisibility(View.GONE);
-			gridClientes.setVisibility(View.GONE);
-		}
+			if (this.campanha.getClientes() == null
+					|| this.campanha.getClientes().isEmpty()) {
+				indiceUltimoClienteEnviado = -1;
+			}
 
-		this.campanha = campanha;
+			isWhatsApp = false;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (BusinessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -264,6 +244,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			showMessage = true;
 
 			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+				obterUltimoEnviado();
+
 				CampanhaCliente campanhaCliente = this.campanha.getClientes()
 						.get(indiceUltimoClienteEnviado);
 				Uri uri = Uri.parse("smsto:"
@@ -271,7 +253,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				intentAction = Intent.ACTION_SENDTO;
 				i = new Intent(intentAction, uri);
 				i.setPackage("com.whatsapp");
-				startActivity(Intent.createChooser(i, ""));
+				startActivityForResult(Intent.createChooser(i, ""), WHATSAPP);
 			} else if (campanha.getTipoEnvio() == TipoEnvio.MANUAL.getValue()) {
 				if (campanha.getMensagem() != null
 						&& campanha.getMensagem().length() > 0) {
@@ -279,7 +261,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 					String text = campanha.getMensagem();
 					i.putExtra(Intent.EXTRA_TEXT, text);
 					i.setPackage("com.whatsapp");
-					startActivity(Intent.createChooser(i, ""));
+					startActivityForResult(Intent.createChooser(i, ""),
+							WHATSAPP);
 				} else if (campanha.getCaminhoImagem() != null) {
 					if (selectedImageUri == null) {
 						Intent intent = new Intent();
@@ -309,11 +292,11 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	protected void onRestart() {
 		super.onRestart();
 
-		if (!finalizado) {
-			CampanhaController campanhaController = new CampanhaController(
-					true, getApplicationContext());
+		if (!finalizado && isWhatsApp) {
+			if (!fromEdit && !fromDetailClient) {
+				CampanhaController campanhaController = new CampanhaController(
+						true, getApplicationContext());
 
-			if (!fromEdit && ! fromDetailClient) {
 				if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()
 						&& SituacaoCampanha.ENVIADO.getValue() != campanha
 								.getSituacao().getIdentificador()) {
@@ -335,32 +318,9 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 					showConfirmation();
 				}
 			}
-
-			try {
-				carregarTela();
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (BusinessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
+		
+		carregarTela();
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -374,10 +334,38 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				i.putExtra(Intent.EXTRA_STREAM, selectedImageUri);
 				i.setPackage("com.whatsapp");
 				startActivity(Intent.createChooser(i, ""));
-			} else if (requestCode == EDITAR_CAMPANHA || requestCode == VISUALIZAR_CLIENTE) {
-				fromEdit = data.hasExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR);
-				fromDetailClient = data.hasExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE_VISUALIZAR);
+			} else if (requestCode == EDITAR_CAMPANHA
+					|| requestCode == VISUALIZAR_CLIENTE) {
+				fromEdit = data
+						.hasExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR);
+				fromDetailClient = data
+						.hasExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE_VISUALIZAR);
+				isWhatsApp = false;
 			}
+		} else if (resultCode == RESULT_WHATSAPP) {
+			isWhatsApp = true;
+			fromDetailClient = false;
+			fromEdit = false;
+		}
+	}
+
+	private void obterUltimoEnviado() {
+		if (SituacaoCampanha.ENVIANDO.getValue() == campanha.getSituacao()
+				.getIdentificador()) {
+			indiceUltimoClienteEnviado = 0;
+			for (CampanhaCliente campanhaCliente : campanha.getClientes()) {
+				if (SituacaoCampanha.NAO_ENVIADO.getValue() == campanhaCliente
+						.getSituacao().getIdentificador()) {
+					break;
+				}
+				indiceUltimoClienteEnviado++;
+			}
+		} else if (SituacaoCampanha.ENVIADO.getValue() == campanha
+				.getSituacao().getIdentificador()) {
+			indiceUltimoClienteEnviado = campanha.getClientes().size();
+		} else if (SituacaoCampanha.NAO_ENVIADO.getValue() == campanha
+				.getSituacao().getIdentificador()) {
+			indiceUltimoClienteEnviado = 0;
 		}
 	}
 }

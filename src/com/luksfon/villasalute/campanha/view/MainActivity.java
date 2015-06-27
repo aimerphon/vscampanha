@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,53 +22,68 @@ import com.luksfon.villasalute.campanha.view.adapter.ListViewAdapter;
 public class MainActivity extends BaseActivity {
 
 	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.MainActivity.MESSAGE";
-
+	
+	private ListView gridview;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		layoutResId = R.layout.activity_main;
+		
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
-		try {
-			carregarTela();
-		} catch (Exception ex) {
-			Log.println(0, "MainActivity.onCreate", ex.getMessage());
-		}
+	}
+	
+	@Override
+	protected void inicializarTela() {
+		gridview = (ListView) findViewById(R.id.grid_campanha);		
 	}
 
-	protected void carregarTela() throws InstantiationException,
-			IllegalAccessException, NoSuchFieldException,
-			NoSuchMethodException, InvocationTargetException,
-			ClassNotFoundException, BusinessException {
-		CampanhaController campanhaController = new CampanhaController(true,
-				getBaseContext());
+	protected void carregarTela() {
+		try {
+			CampanhaController campanhaController = new CampanhaController(
+					true, getBaseContext());
 
-		// campanhaController.executeSQL("alter table tCampanha add DsMensagem TEXT");
-		// campanhaController.executeSQL("alter table tCampanha add DsPathImagem TEXT");
-		// campanhaController.executeSQL("alter table tCampanha add StManual INTEGER");
-		// campanhaController.executeSQL("alter table tCampanha add BlImagem BLOB");
+			// campanhaController.executeSQL("alter table tCampanha add DsMensagem TEXT");
+			// campanhaController.executeSQL("alter table tCampanha add DsPathImagem TEXT");
+			// campanhaController.executeSQL("alter table tCampanha add StManual INTEGER");
+			// campanhaController.executeSQL("alter table tCampanha add BlImagem BLOB");
 
-		ArrayList<Campanha> lista1 = campanhaController.toList(Campanha.class);
+			ArrayList<Campanha> campanhas = campanhaController.toList(Campanha.class);
 
-		ListView gridview = (ListView) findViewById(R.id.grid_campanha);
-		gridview.setAdapter(new ListViewAdapter<Campanha>(this, lista1));
+			gridview.setAdapter(new ListViewAdapter<Campanha>(this, campanhas));
 
-		gridview.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Intent visuzalizarCampanha = new Intent(parent.getContext(),
-						VisualizarCampanhaActivity.class);
-				visuzalizarCampanha.putExtra(
-						VisualizarCampanhaActivity.EXTRA_MESSAGE,
-						String.valueOf(parent.getItemIdAtPosition(position)));
-				startActivity(visuzalizarCampanha);
-			}
-		});
+			gridview.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					Intent visuzalizarCampanha = new Intent(
+							parent.getContext(),
+							VisualizarCampanhaActivity.class);
+					visuzalizarCampanha.putExtra(
+							VisualizarCampanhaActivity.EXTRA_MESSAGE, String
+									.valueOf(parent
+											.getItemIdAtPosition(position)));
+					startActivity(visuzalizarCampanha);
+				}
+			});
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (BusinessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
@@ -102,33 +116,9 @@ public class MainActivity extends BaseActivity {
 
 	@Override
 	protected void onRestart() {
-		// TODO Auto-generated method stub
 		super.onRestart();
 
-		try {
-			carregarTela();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BusinessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		carregarTela();
 	}
 
 	@Override
@@ -149,7 +139,7 @@ public class MainActivity extends BaseActivity {
 					}
 				});
 	}
-	
+
 	private void sair() {
 		super.finish();
 		super.onDestroy();

@@ -3,10 +3,8 @@ package com.luksfon.villasalute.campanha.view;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,55 +18,67 @@ import com.luksfon.villasalute.campanha.entity.Cliente;
 import com.luksfon.villasalute.campanha.exception.BusinessException;
 import com.luksfon.villasalute.campanha.view.adapter.ListViewAdapter;
 
-public class ConsultaClientesActivity extends Activity {
+public class ConsultaClientesActivity extends BaseActivity {
 	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.ConsultaClientesActivity.MESSAGE";
+
+	private ListView gridview;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		layoutResId = R.layout.consulta_clientes;
+		
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.consulta_clientes);
-
-		try {
-			CarregarGrid();
-		} catch (Exception ex) {
-			Log.println(0, "ConsultaClientesActivity.onCreate", ex.getMessage());
-		}
 	}
 
-	private void CarregarGrid() throws InstantiationException,
-			IllegalAccessException, NoSuchFieldException,
-			NoSuchMethodException, InvocationTargetException,
-			ClassNotFoundException, BusinessException {
-		ClienteController<Cliente> clienteController = new ClienteController<Cliente>(
-				false, getBaseContext());
+	@Override
+	protected void inicializarTela() {
+		gridview = (ListView) findViewById(R.id.grid_cliente);
+	}
 
-		ArrayList<Cliente> lista1 = clienteController.toList(Cliente.class);
+	@Override
+	protected void carregarTela() {
+		try {
+			ClienteController<Cliente> clienteController = new ClienteController<Cliente>(
+					false, getBaseContext());
 
-		ListView gridview = (ListView) findViewById(R.id.grid_cliente);
-		gridview.setAdapter(new ListViewAdapter<Cliente>(this, lista1));
+			ArrayList<Cliente> clientes = clienteController
+					.toList(Cliente.class);
 
-		gridview.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				Intent visuzalizarCliente = new Intent(parent.getContext(),
-						VisualizarClienteActivity.class);
-				visuzalizarCliente.putExtra(EXTRA_MESSAGE,
-						String.valueOf(parent.getItemIdAtPosition(position)));
-				startActivity(visuzalizarCliente);
-			}
-		});
+			gridview.setAdapter(new ListViewAdapter<Cliente>(this, clientes));
+
+			gridview.setOnItemClickListener(new OnItemClickListener() {
+				@Override
+				public void onItemClick(AdapterView<?> parent, View view,
+						int position, long id) {
+					Intent visuzalizarCliente = new Intent(parent.getContext(),
+							VisualizarClienteActivity.class);
+					visuzalizarCliente.putExtra(EXTRA_MESSAGE, String
+							.valueOf(parent.getItemIdAtPosition(position)));
+					startActivity(visuzalizarCliente);
+				}
+			});
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (BusinessException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	protected void onRestart() {
 		super.onRestart();
-		
-		try {
-			CarregarGrid();
-		} catch (Exception ex) {
-			Log.println(0, "ConsultaClientesActivity.onCreate", ex.getMessage());
-		}
+
+		carregarTela();
 	}
 
 	@Override
