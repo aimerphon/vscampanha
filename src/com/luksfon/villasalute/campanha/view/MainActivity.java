@@ -18,7 +18,6 @@ import com.luksfon.villasalute.campanha.controller.CampanhaController;
 import com.luksfon.villasalute.campanha.entity.Campanha;
 import com.luksfon.villasalute.campanha.exception.BusinessException;
 import com.luksfon.villasalute.campanha.view.adapter.CampanhaAdapter;
-import com.luksfon.villasalute.campanha.view.adapter.ListViewAdapter;
 
 public class MainActivity extends BaseActivity {
 

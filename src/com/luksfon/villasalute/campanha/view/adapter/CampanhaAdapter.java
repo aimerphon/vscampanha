@@ -62,44 +62,47 @@ public class CampanhaAdapter<E extends Campanha> extends BaseAdapter {
 			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
-		Campanha campanha = dataSource.get(position);
+		E campanha = dataSource.get(position);
 
 		viewHolder.lblCampanha.setText(campanha.getDescricao());
-		
+
 		if (campanha.getMensagem() != null) {
 			viewHolder.lblMensagem.setText(campanha.getMensagem());
 		} else {
 			viewHolder.lblMensagem.setText("Imagem");
 		}
 
-		if (SituacaoCampanha.ENVIADO.getValue() == campanha.getSituacao()
-				.getIdentificador()) {
-			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
-				viewHolder.imgSituacao
-				.setImageResource(R.drawable.ic_action_group_vermelho);
-			} else {
-				viewHolder.imgSituacao
-						.setImageResource(R.drawable.ic_action_person_vermelho);
-			}
-		} else if (SituacaoCampanha.ENVIANDO.getValue() == campanha
-				.getSituacao().getIdentificador()) {
-			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
-				viewHolder.imgSituacao
-				.setImageResource(R.drawable.ic_action_group_amarelo);
-			} else {
-				viewHolder.imgSituacao
-						.setImageResource(R.drawable.ic_action_person_amarelo);
-			}
-		} else if (SituacaoCampanha.NAO_ENVIADO.getValue() == campanha
-				.getSituacao().getIdentificador()) {
-			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
-				viewHolder.imgSituacao
-				.setImageResource(R.drawable.ic_action_group_verde);
-			} else {
-				viewHolder.imgSituacao
-						.setImageResource(R.drawable.ic_action_person_verde);
-			}
-		}
+		viewHolder.imgSituacao
+				.setImageResource(obterImageResId(campanha));
+
+		// if (SituacaoCampanha.ENVIADO.getValue() == campanha.getSituacao()
+		// .getIdentificador()) {
+		// if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+		// viewHolder.imgSituacao
+		// .setImageResource(R.drawable.ic_action_group_vermelho);
+		// } else {
+		// viewHolder.imgSituacao
+		// .setImageResource(R.drawable.ic_action_person_vermelho);
+		// }
+		// } else if (SituacaoCampanha.ENVIANDO.getValue() == campanha
+		// .getSituacao().getIdentificador()) {
+		// if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+		// viewHolder.imgSituacao
+		// .setImageResource(R.drawable.ic_action_group_amarelo);
+		// } else {
+		// viewHolder.imgSituacao
+		// .setImageResource(R.drawable.ic_action_person_amarelo);
+		// }
+		// } else if (SituacaoCampanha.NAO_ENVIADO.getValue() == campanha
+		// .getSituacao().getIdentificador()) {
+		// if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+		// viewHolder.imgSituacao
+		// .setImageResource(R.drawable.ic_action_group_verde);
+		// } else {
+		// viewHolder.imgSituacao
+		// .setImageResource(R.drawable.ic_action_person_verde);
+		// }
+		// }
 
 		convertView.measure(View.MeasureSpec.makeMeasureSpec(
 				View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED),
@@ -107,6 +110,35 @@ public class CampanhaAdapter<E extends Campanha> extends BaseAdapter {
 						View.MeasureSpec.UNSPECIFIED));
 
 		return convertView;
+	}
+
+	public static int obterImageResId(Campanha campanha) {
+		int imageResId = -1;
+
+		if (SituacaoCampanha.ENVIADO.getValue() == campanha.getSituacao()
+				.getIdentificador()) {
+			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+				imageResId = R.drawable.ic_action_group_vermelho;
+			} else {
+				imageResId = R.drawable.ic_action_person_vermelho;
+			}
+		} else if (SituacaoCampanha.ENVIANDO.getValue() == campanha
+				.getSituacao().getIdentificador()) {
+			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+				imageResId = R.drawable.ic_action_group_amarelo;
+			} else {
+				imageResId = R.drawable.ic_action_person_amarelo;
+			}
+		} else if (SituacaoCampanha.NAO_ENVIADO.getValue() == campanha
+				.getSituacao().getIdentificador()) {
+			if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()) {
+				imageResId = R.drawable.ic_action_group_verde;
+			} else {
+				imageResId = R.drawable.ic_action_person_verde;
+			}
+		}
+
+		return imageResId;
 	}
 
 	class ViewHolder {

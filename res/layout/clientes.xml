@@ -46,10 +46,10 @@
         android:id="@+id/lblClientes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/rdgEnvio"
-        android:layout_alignStart="@+id/rdgEnvio"
         android:layout_below="@+id/rdgEnvio"
         android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:text="@string/string_label_clientes"
         android:textAppearance="@style/TextMediumBlue" />
 
@@ -63,6 +63,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
         android:layout_marginRight="5dp"
+        android:layout_margin="5dp"
         android:dividerHeight="3dp"
         android:horizontalSpacing="10dp"
         android:numColumns="1"

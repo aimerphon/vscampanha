@@ -6,8 +6,8 @@
     android:orientation="vertical"
     tools:context="com.luksfon.villasalute.campanha.view.VisualizarCampanhaActivity" >
 
-    <TextView
-        android:id="@+id/lblDescricao"
+    <ImageView
+        android:id="@+id/imgSituacao"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -15,7 +15,18 @@
         android:layout_alignParentTop="true"
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="12dp"
+        android:src="@drawable/ic_action_group" />
+
+    <TextView
+        android:id="@+id/lblDescricao"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="3dp"
+        android:layout_toEndOf="@+id/imgSituacao"
+        android:layout_toRightOf="@+id/imgSituacao"
         android:text="@string/string_label_descricao"
         android:textAppearance="@style/TextMediumBlue" />
 
@@ -31,57 +42,13 @@
         android:textAppearance="@style/TextMediumOrange" />
 
     <TextView
-        android:id="@+id/lblSituacao"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtDescricao"
-        android:layout_alignStart="@+id/txtDescricao"
-        android:layout_below="@+id/txtDescricao"
-        android:layout_marginTop="20dp"
-        android:text="@string/string_label_situacao"
-        android:textAppearance="@style/TextMediumBlue" />
-
-    <TextView
-        android:id="@+id/txtSituacao"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lblSituacao"
-        android:layout_alignStart="@+id/lblSituacao"
-        android:layout_below="@+id/lblSituacao"
-        android:layout_marginTop="2dp"
-        android:text="@string/string_padrao"
-        android:textAppearance="@style/TextMediumOrange" />
-
-    <TextView
-        android:id="@+id/lblTipoEnvio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtSituacao"
-        android:layout_alignStart="@+id/txtSituacao"
-        android:layout_below="@+id/txtSituacao"
-        android:layout_marginTop="20dp"
-        android:text="@string/string_label_envio"
-        android:textAppearance="@style/TextMediumBlue" />
-
-    <TextView
-        android:id="@+id/txtTipoEnvio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lblTipoEnvio"
-        android:layout_alignStart="@+id/lblTipoEnvio"
-        android:layout_below="@+id/lblTipoEnvio"
-        android:layout_marginTop="2dp"
-        android:text="@string/string_padrao"
-        android:textAppearance="@style/TextMediumOrange" />
-
-    <TextView
         android:id="@+id/lblTipoMensagem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtTipoEnvio"
-        android:layout_alignStart="@+id/txtTipoEnvio"
-        android:layout_below="@+id/txtTipoEnvio"
-        android:layout_marginTop="20dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_below="@+id/txtDescricao"
+        android:layout_marginTop="10dp"
         android:text="@string/string_label_tipo_mensagem"
         android:textAppearance="@style/TextMediumBlue" />
 
@@ -136,11 +103,13 @@
         android:layout_alignLeft="@+id/lblClientes"
         android:layout_alignStart="@+id/lblClientes"
         android:layout_below="@+id/lblClientes"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
         android:layout_marginTop="2dp"
         android:background="#ffffff"
         android:divider="#fff3f3f3"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
         android:dividerHeight="3dp"
         android:numColumns="1" >
     </ListView>

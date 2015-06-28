@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -22,7 +23,8 @@ import com.luksfon.villasalute.campanha.entity.CampanhaCliente;
 import com.luksfon.villasalute.campanha.exception.BusinessException;
 import com.luksfon.villasalute.campanha.util.SituacaoCampanha;
 import com.luksfon.villasalute.campanha.util.TipoEnvio;
-import com.luksfon.villasalute.campanha.view.adapter.ListViewAdapter;
+import com.luksfon.villasalute.campanha.view.adapter.CampanhaAdapter;
+import com.luksfon.villasalute.campanha.view.adapter.ClienteAdapter;
 
 public class VisualizarCampanhaActivity extends BaseActivity {
 
@@ -42,14 +44,15 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	private Campanha campanha;
 	private ListView gridClientes;
 	private int indiceUltimoClienteEnviado;
+	private ImageView imgSituacao;
 	private TextView lblClientes;
-	private TextView txtTipoEnvio;
+	// private TextView txtTipoEnvio;
 	private TextView lblTipoMensagem;
 	private TextView txtTipoMensagem;
 	private TextView lblMensagem;
 	private TextView txtMensagem;
 	private TextView txtDescricao;
-	private TextView txtSituacao;
+	// private TextView txtSituacao;
 	private Uri selectedImageUri;
 	private boolean fromEdit;
 	private boolean fromDetailClient;
@@ -57,7 +60,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		layoutResId = R.layout.visualizar_campanha;
-		
+
 		super.onCreate(savedInstanceState);
 	}
 
@@ -89,14 +92,15 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	@Override
 	protected void inicializarTela() {
 		txtDescricao = (TextView) findViewById(R.id.txtDescricao);
-		txtSituacao = (TextView) findViewById(R.id.txtSituacao);
+		// txtSituacao = (TextView) findViewById(R.id.txtSituacao);
 		gridClientes = (ListView) findViewById(R.id.grid_clientes);
-		txtTipoEnvio = (TextView) findViewById(R.id.txtTipoEnvio);
+		// txtTipoEnvio = (TextView) findViewById(R.id.txtTipoEnvio);
 		lblTipoMensagem = (TextView) findViewById(R.id.lblTipoMensagem);
 		txtTipoMensagem = (TextView) findViewById(R.id.txtTipoMensagem);
 		lblMensagem = (TextView) findViewById(R.id.lblMensagem);
 		txtMensagem = (TextView) findViewById(R.id.txtMensagem);
 		lblClientes = (TextView) findViewById(R.id.lblClientes);
+		imgSituacao = (ImageView) findViewById(R.id.imgSituacao);
 	}
 
 	@Override
@@ -117,8 +121,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			this.campanha = campanha;
 
 			txtDescricao.setText(campanha.getDescricao());
-			txtSituacao.setText(campanha.getSituacao().getDescricao());
-			gridClientes.setAdapter(new ListViewAdapter<CampanhaCliente>(this,
+			// txtSituacao.setText(campanha.getSituacao().getDescricao());
+			gridClientes.setAdapter(new ClienteAdapter<CampanhaCliente>(this,
 					campanha.getClientes()));
 			gridClientes.setOnItemClickListener(new OnItemClickListener() {
 				@Override
@@ -137,9 +141,12 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				}
 			});
 
+			imgSituacao.setImageResource(CampanhaAdapter
+					.obterImageResId(campanha));
+
 			if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
-				txtTipoEnvio.setText(this.getApplicationContext().getString(
-						R.string.string_label_direto));
+				// txtTipoEnvio.setText(this.getApplicationContext().getString(
+				// R.string.string_label_direto));
 				lblTipoMensagem.setVisibility(View.GONE);
 				txtTipoMensagem.setVisibility(View.GONE);
 				lblMensagem.setVisibility(View.GONE);
@@ -147,8 +154,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 
 				obterUltimoEnviado();
 			} else {
-				txtTipoEnvio.setText(this.getApplicationContext().getString(
-						R.string.string_label_manual));
+				// txtTipoEnvio.setText(this.getApplicationContext().getString(
+				// R.string.string_label_manual));
 
 				if (campanha.getCaminhoImagem() == null) {
 					txtTipoMensagem.setText(this.getApplicationContext()
@@ -204,7 +211,43 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			excluirCampanha();
 			return true;
 		case R.id.action_enviar:
-			enviarCampanha();
+			if (SituacaoCampanha.ENVIADO.getValue() == this.campanha
+					.getSituacao().getIdentificador()) {
+				finalizado = true;
+				this.showConfirmationMessage(
+						this.getApplicationContext(),
+						"Reenviar campanha",
+						this.getApplicationContext().getString(
+								R.string.msg_erro_campanha_ja_enviada),
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+								finalizado = false;
+								campanha.getSituacao()
+										.setIdentificador(
+												SituacaoCampanha.NAO_ENVIADO
+														.getValue());
+
+								CampanhaController campanhaController = new CampanhaController(
+										true, getApplicationContext());
+
+								try {
+									campanhaController
+											.atualizarSituacaoCampanha(campanha);
+								} catch (BusinessException e) {
+									e.printStackTrace();
+								}
+
+								enviarCampanha();
+							}
+						}, new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int id) {
+								dialog.cancel();
+							}
+						});
+			} else {
+				enviarCampanha();
+			}
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
@@ -230,14 +273,41 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 
 	protected void enviarCampanha() {
 		try {
-			if (Integer.valueOf(
-					getApplicationContext()
-							.getString(R.string.situacao_enviado)).equals(
-					this.campanha.getSituacao().getIdentificador())) {
-				finalizado = true;
-				throw new BusinessException(getApplicationContext().getString(
-						R.string.msg_erro_campanha_ja_enviada));
-			}
+			// if (SituacaoCampanha.ENVIADO.getValue() == this.campanha
+			// .getSituacao().getIdentificador()) {
+			// finalizado = true;
+			// this.showConfirmationMessage(
+			// this.getApplicationContext(),
+			// "Reenviar campanha",
+			// this.getApplicationContext().getString(
+			// R.string.msg_erro_campanha_ja_enviada),
+			// new DialogInterface.OnClickListener() {
+			// public void onClick(DialogInterface dialog, int id) {
+			// dialog.cancel();
+			// finalizado = false;
+			// campanha.getSituacao()
+			// .setIdentificador(
+			// SituacaoCampanha.NAO_ENVIADO
+			// .getValue());
+			//
+			// CampanhaController campanhaController = new CampanhaController(
+			// true, getApplicationContext());
+			//
+			// try {
+			// campanhaController
+			// .atualizarSituacaoCampanha(campanha);
+			// } catch (BusinessException e) {
+			// e.printStackTrace();
+			// }
+			//
+			// enviarCampanha();
+			// }
+			// }, new DialogInterface.OnClickListener() {
+			// public void onClick(DialogInterface dialog, int id) {
+			// dialog.cancel();
+			// }
+			// });
+			// }
 
 			String intentAction = Intent.ACTION_SEND;
 			Intent i = new Intent(intentAction);
@@ -281,8 +351,6 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 					}
 				}
 			}
-		} catch (BusinessException bex) {
-			super.showMessage(bex.getMessage());
 		} catch (Exception ex) {
 			Log.println(0, "Enviar Campanha", ex.getMessage());
 		}
@@ -300,6 +368,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				if (campanha.getTipoEnvio() == TipoEnvio.AUTOMATICO.getValue()
 						&& SituacaoCampanha.ENVIADO.getValue() != campanha
 								.getSituacao().getIdentificador()) {
+
 					indiceUltimoClienteEnviado = campanhaController
 							.campanhaEnviadaCliente(campanha,
 									indiceUltimoClienteEnviado);
@@ -319,7 +388,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 				}
 			}
 		}
-		
+
 		carregarTela();
 	}
 

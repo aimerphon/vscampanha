@@ -49,8 +49,8 @@
         android:layout_below="@+id/rdgTipo"
         android:layout_marginTop="5dp"
         android:ems="15"
-        android:inputType="text"
-        android:maxLength="60"
+        android:inputType="textMultiLine"
+        android:maxLength="250"
         android:textAppearance="@style/TextMediumOrange" />
 
     <Button

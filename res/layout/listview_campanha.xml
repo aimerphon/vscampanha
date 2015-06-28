@@ -24,7 +24,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="3dp"
-        android:text="Large Text"
+        android:text="@string/string_padrao"
         android:textAppearance="@style/TextMediumOrange" />
 
     <TextView
@@ -36,7 +36,7 @@
         android:layout_toEndOf="@+id/imgSituacao"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:text="Medium Text"
+        android:text="@string/string_padrao"
         android:textAppearance="@style/TextSmallBlue" />
 
 </RelativeLayout>
