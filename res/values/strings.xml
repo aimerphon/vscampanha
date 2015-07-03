@@ -14,6 +14,7 @@
     <string name="database_name">SETTE.db</string>
     <string name="situacao_enviado_descricao">Enviado</string>
     <string name="situacao_enviando_descricao">Enviando</string>
+    <string name="situacao_nao_enviado_descricao">Não enviado</string>
     <string name="msg_erro_campanha_ja_enviada">A campanha já foi enviada para todos os clientes. Gostaria de reenviar a campanha?</string>
     <string name="msg_erro_campo_obrigatorio">Campo {1} obrigatório(a)</string>
     <string name="msg_erro_insertUpdate">Nenhuma linha afetada</string>

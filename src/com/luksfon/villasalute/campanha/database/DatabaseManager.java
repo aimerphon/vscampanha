@@ -11,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 
 import com.luksfon.villasalute.campanha.R;
 import com.luksfon.villasalute.campanha.annotation.Column;
@@ -21,13 +22,18 @@ import com.luksfon.villasalute.campanha.annotation.PrimaryKey;
 import com.luksfon.villasalute.campanha.annotation.Table;
 import com.luksfon.villasalute.campanha.annotation.TableAssociated;
 import com.luksfon.villasalute.campanha.dal.SQLiteDbType;
+import com.luksfon.villasalute.campanha.entity.Campanha;
+import com.luksfon.villasalute.campanha.entity.CampanhaCliente;
+import com.luksfon.villasalute.campanha.entity.Cliente;
 import com.luksfon.villasalute.campanha.entity.EntityBase;
+import com.luksfon.villasalute.campanha.entity.Situacao;
 import com.luksfon.villasalute.campanha.exception.BusinessException;
 import com.luksfon.villasalute.campanha.query.LogicComparator;
 import com.luksfon.villasalute.campanha.query.Restriction;
+import com.luksfon.villasalute.campanha.util.SituacaoCampanha;
 
 @SuppressLint("DefaultLocale")
-public class DatabaseManager {
+public class DatabaseManager extends SQLiteOpenHelper {
 
 	protected Context context;
 	private String[] pkValues;
@@ -38,6 +44,8 @@ public class DatabaseManager {
 	private static SQLiteDatabase database;
 
 	public DatabaseManager(boolean buildAllEntities, Context context) {
+		super(context, context.getString(R.string.database_name), null, 1);
+
 		this.context = context;
 		this.buildAllEntities = buildAllEntities;
 		this.restrictions = new ArrayList<Restriction>();
@@ -45,6 +53,53 @@ public class DatabaseManager {
 		if (database == null) {
 			database = getInstance(context);
 		}
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase db) {
+		try {
+			createTable(Situacao.class);
+			
+			beginTransaction();
+			Situacao situacao = new Situacao();
+			
+			situacao.setIdentificador(SituacaoCampanha.ENVIADO.getValue());
+			situacao.setDescricao(context.getString(R.string.situacao_enviado_descricao));
+			
+			insert(situacao);
+			
+			situacao.setIdentificador(SituacaoCampanha.ENVIANDO.getValue());
+			situacao.setDescricao(context.getString(R.string.situacao_enviando_descricao));
+			
+			insert(situacao);
+			
+			situacao.setIdentificador(SituacaoCampanha.NAO_ENVIADO.getValue());
+			situacao.setDescricao(context.getString(R.string.situacao_nao_enviado_descricao));
+
+			insert(situacao);
+			saveChanges();
+			
+			createTable(Cliente.class);
+			createTable(Campanha.class);
+			createTable(CampanhaCliente.class);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (BusinessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
 	}
 
 	public synchronized static SQLiteDatabase getInstance(Context context) {

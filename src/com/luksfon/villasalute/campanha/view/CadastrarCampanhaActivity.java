@@ -1,8 +1,10 @@
 package com.luksfon.villasalute.campanha.view;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +16,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.MediaColumns;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,6 +46,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 	private static final int SELECT_PICTURE = 1;
 
+	private static final int PICKFILE_RESULT_CODE = 2;
+
 	private Button btnSelecionarImagem;
 	private EditText txtDescricao;
 	private EditText txtMensagem;
@@ -71,7 +74,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		layoutResId = R.layout.cadastrar_campanha;
-		
+
 		super.onCreate(savedInstanceState);
 	}
 
@@ -195,10 +198,14 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 		CarregarGrid();
 
+		rbtManual.setChecked(true);
 		rbtManual.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
+				if (!isChecked) {
+					importarArquivo();
+				}
 				grid_clientes.setVisibility(View.VISIBLE);
 				ViewGroup.LayoutParams layoutParams = grid_clientes
 						.getLayoutParams();
@@ -206,7 +213,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 						grid_clientes.getAdapter().getCount());
 				grid_clientes.setLayoutParams(layoutParams);
 				lblClientes.setVisibility(View.VISIBLE);
-				// TODO Ajustar a seleção de imagem
 				lblTipoMensagem.setVisibility(View.GONE);
 				txtMensagem.setVisibility(View.GONE);
 				rdgTipo.setVisibility(View.GONE);
@@ -358,8 +364,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		if (resultCode == RESULT_OK) {
 			if (requestCode == SELECT_PICTURE) {
 				Uri selectedImageUri = data.getData();
-				Log.d("URI VAL",
-						"selectedImageUri = " + selectedImageUri.toString());
+				// Log.d("URI VAL",
+				// "selectedImageUri = " + selectedImageUri.toString());
 				selectedImagePath = getPath(selectedImageUri);
 
 				if (selectedImagePath != null) {
@@ -399,6 +405,44 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 						e.printStackTrace();
 					}
 				}
+			} else if (requestCode == PICKFILE_RESULT_CODE) {
+				Uri uri = data.getData();
+
+				BufferedReader reader = null;
+				try {
+					reader = new BufferedReader(new InputStreamReader(
+							getContentResolver().openInputStream(uri)));
+
+					String line;
+					String[] dados;
+					Cliente cliente = null;
+					ArrayList<Cliente> clientes = new ArrayList<Cliente>();
+
+					while ((line = reader.readLine()) != null) {
+						if (!getApplicationContext().getString(
+								R.string.string_empty).equals(line)) {
+							cliente = new Cliente();
+							dados = line.split(getApplicationContext()
+									.getString(R.string.string_separator)
+									.trim());
+
+							cliente.setNome(dados[0]);
+							cliente.setTelefone(dados[1]);
+							cliente.setEmail(dados[2]);
+
+							clientes.add(cliente);
+						}
+					}
+
+					reader.close();
+					
+					grid_clientes.setAdapter(new SelectViewAdapter<Cliente>(this,
+							clientes));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -416,5 +460,11 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		} else {
 			return uri.getPath();
 		}
+	}
+
+	private void importarArquivo() {
+		Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+		intent.setType("file/*");
+		startActivityForResult(intent, PICKFILE_RESULT_CODE);
 	}
 }
