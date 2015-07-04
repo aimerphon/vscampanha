@@ -1,9 +1,15 @@
 package com.luksfon.villasalute.campanha.view;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -45,10 +51,9 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	private ListView gridClientes;
 	private int indiceUltimoClienteEnviado;
 	private ImageView imgSituacao;
+	private ImageView imageView1;
 	private TextView lblClientes;
 	// private TextView txtTipoEnvio;
-	private TextView lblTipoMensagem;
-	private TextView txtTipoMensagem;
 	private TextView lblMensagem;
 	private TextView txtMensagem;
 	private TextView txtDescricao;
@@ -95,12 +100,11 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 		// txtSituacao = (TextView) findViewById(R.id.txtSituacao);
 		gridClientes = (ListView) findViewById(R.id.grid_clientes);
 		// txtTipoEnvio = (TextView) findViewById(R.id.txtTipoEnvio);
-		lblTipoMensagem = (TextView) findViewById(R.id.lblTipoMensagem);
-		txtTipoMensagem = (TextView) findViewById(R.id.txtTipoMensagem);
 		lblMensagem = (TextView) findViewById(R.id.lblMensagem);
 		txtMensagem = (TextView) findViewById(R.id.txtMensagem);
 		lblClientes = (TextView) findViewById(R.id.lblClientes);
 		imgSituacao = (ImageView) findViewById(R.id.imgSituacao);
+		imageView1 = (ImageView) findViewById(R.id.imageView1);
 	}
 
 	@Override
@@ -145,27 +149,45 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 					.obterImageResId(campanha));
 
 			if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
-				// txtTipoEnvio.setText(this.getApplicationContext().getString(
-				// R.string.string_label_direto));
-				lblTipoMensagem.setVisibility(View.GONE);
-				txtTipoMensagem.setVisibility(View.GONE);
 				lblMensagem.setVisibility(View.GONE);
 				txtMensagem.setVisibility(View.GONE);
 
 				obterUltimoEnviado();
 			} else {
-				// txtTipoEnvio.setText(this.getApplicationContext().getString(
-				// R.string.string_label_manual));
-
 				if (campanha.getCaminhoImagem() == null) {
-					txtTipoMensagem.setText(this.getApplicationContext()
-							.getString(R.string.string_label_texto));
 					txtMensagem.setText(campanha.getMensagem());
 				} else {
-					txtTipoMensagem.setText(this.getApplicationContext()
-							.getString(R.string.string_label_imagem));
-					lblMensagem.setVisibility(View.GONE);
-					txtMensagem.setVisibility(View.GONE);
+					if (selectedImageUri == null) {
+						lblMensagem.setVisibility(View.GONE);
+						txtMensagem.setVisibility(View.GONE);
+
+						Uri uri = Uri.parse(campanha.getCaminhoImagem());
+
+						BufferedReader reader = null;
+						try {
+							reader = new BufferedReader(new InputStreamReader(
+									getContentResolver().openInputStream(uri)));
+
+							selectedImageUri = uri;
+
+							Bitmap bitmap;
+							bitmap = android.provider.MediaStore.Images.Media
+									.getBitmap(getContentResolver(), uri);
+
+							imageView1.setImageBitmap(bitmap);
+
+							ByteArrayOutputStream stream = new ByteArrayOutputStream();
+							bitmap.compress(Bitmap.CompressFormat.PNG, 100,
+									stream);
+
+							reader.close();
+
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
 				}
 
 				lblClientes.setVisibility(View.GONE);
@@ -273,42 +295,6 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 
 	protected void enviarCampanha() {
 		try {
-			// if (SituacaoCampanha.ENVIADO.getValue() == this.campanha
-			// .getSituacao().getIdentificador()) {
-			// finalizado = true;
-			// this.showConfirmationMessage(
-			// this.getApplicationContext(),
-			// "Reenviar campanha",
-			// this.getApplicationContext().getString(
-			// R.string.msg_erro_campanha_ja_enviada),
-			// new DialogInterface.OnClickListener() {
-			// public void onClick(DialogInterface dialog, int id) {
-			// dialog.cancel();
-			// finalizado = false;
-			// campanha.getSituacao()
-			// .setIdentificador(
-			// SituacaoCampanha.NAO_ENVIADO
-			// .getValue());
-			//
-			// CampanhaController campanhaController = new CampanhaController(
-			// true, getApplicationContext());
-			//
-			// try {
-			// campanhaController
-			// .atualizarSituacaoCampanha(campanha);
-			// } catch (BusinessException e) {
-			// e.printStackTrace();
-			// }
-			//
-			// enviarCampanha();
-			// }
-			// }, new DialogInterface.OnClickListener() {
-			// public void onClick(DialogInterface dialog, int id) {
-			// dialog.cancel();
-			// }
-			// });
-			// }
-
 			String intentAction = Intent.ACTION_SEND;
 			Intent i = new Intent(intentAction);
 			showMessage = true;
@@ -347,7 +333,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 						i.setType("image/*");
 						i.putExtra(Intent.EXTRA_STREAM, selectedImageUri);
 						i.setPackage("com.whatsapp");
-						startActivity(Intent.createChooser(i, ""));
+						startActivityForResult(Intent.createChooser(i, ""), WHATSAPP);
 					}
 				}
 			}

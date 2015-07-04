@@ -13,17 +13,18 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore.MediaColumns;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
@@ -45,31 +46,22 @@ import com.luksfon.villasalute.campanha.view.adapter.SelectViewAdapter;
 public class CadastrarCampanhaActivity extends BaseActivity {
 
 	private static final int SELECT_PICTURE = 1;
-
 	private static final int PICKFILE_RESULT_CODE = 2;
 
-	private Button btnSelecionarImagem;
 	private EditText txtDescricao;
 	private EditText txtMensagem;
-	private ListView grid_clientes;
 	private ImageView imageView1;
-	private TextView lblClientes;
-	private TextView lblTipoMensagem;
+	private ListView grid_clientes;
 	private RadioButton rbtTexto;
 	private RadioButton rbtImagem;
 	private RadioButton rbtManual;
 	private RadioButton rbtAutomatico;
 	private RadioGroup rdgTipo;
+	private TextView lblClientes;
+	private TextView lblTipoMensagem;
 
 	private String selectedImagePath;
 	private byte[] byteImagem;
-
-	// private String[] mFileList;
-	// private File mPath = new File(Environment.getExternalStorageDirectory() +
-	// "//villasalute//");
-	// private String mChosenFile;
-	// private static final String FTYPE = ".csv";
-	// private static final int DIALOG_LOAD_FILE = 1000;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -126,7 +118,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		lblClientes = (TextView) findViewById(R.id.lblClientes);
 		grid_clientes = (ListView) findViewById(R.id.grid_clientes);
 		imageView1 = (ImageView) findViewById(R.id.imageView1);
-		btnSelecionarImagem = (Button) findViewById(R.id.btnImagem);
 		txtMensagem = (EditText) findViewById(R.id.txtMensagem);
 		rbtImagem = (RadioButton) findViewById(R.id.rbtImagem);
 		rbtTexto = (RadioButton) findViewById(R.id.rbtTexto);
@@ -139,21 +130,12 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		txtDescricao.setText(this.getApplicationContext().getString(
 				R.string.string_empty));
 		txtDescricao.setEnabled(true);
-		btnSelecionarImagem.setVisibility(View.GONE);
-		btnSelecionarImagem.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				selecionarImagem();
-			}
-		});
-
 		rbtImagem.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
+				txtMensagem.setVisibility(View.VISIBLE);
 				txtMensagem.setEnabled(true);
-				btnSelecionarImagem.setVisibility(View.GONE);
-				btnSelecionarImagem.setEnabled(false);
 				imageView1.setVisibility(View.GONE);
 			}
 		});
@@ -164,15 +146,14 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				txtMensagem.setEnabled(false);
+				txtMensagem.setVisibility(View.GONE);
 				txtMensagem.setText(getApplicationContext().getString(
 						R.string.string_empty));
-				// btnSelecionarImagem.setVisibility(View.VISIBLE);
-				// btnSelecionarImagem.setEnabled(true);
-				// imageView1.setVisibility(View.VISIBLE);
-				// imageView1.setImageDrawable(null);
-				// selectedImagePath = getApplicationContext().getString(
-				// R.string.string_empty);
-				selectedImagePath = "imagem";
+				imageView1.setVisibility(View.VISIBLE);
+
+				if (!isChecked) {
+					selecionarImagem();
+				}
 			}
 		});
 
@@ -186,7 +167,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				lblTipoMensagem.setVisibility(View.VISIBLE);
 				rdgTipo.setVisibility(View.VISIBLE);
 				txtMensagem.setVisibility(View.VISIBLE);
-				btnSelecionarImagem.setVisibility(View.GONE);
 				imageView1.setVisibility(View.GONE);
 				rbtTexto.setChecked(true);
 			}
@@ -248,7 +228,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 					}
 				}
 			});
-
 		} catch (InstantiationException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -337,7 +316,6 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 		if (rbtImagem.getVisibility() == View.GONE && rbtImagem.isChecked()
 				&& selectedImagePath.trim().length() == 0) {
-			btnSelecionarImagem.requestFocus();
 			throw new BusinessException(this.getApplicationContext().getString(
 					R.string.msg_erro_selecione_imagem));
 		}
@@ -368,17 +346,42 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				// "selectedImageUri = " + selectedImageUri.toString());
 				selectedImagePath = getPath(selectedImageUri);
 
+				Display display = getWindowManager().getDefaultDisplay();
+				Point size = new Point();
+				display.getSize(size);
+
+				int newWidth = size.x - 50;
+				int newHeight = size.y - 50;
+
 				if (selectedImagePath != null) {
 					Bitmap bitmap;
 					try {
 						bitmap = android.provider.MediaStore.Images.Media
 								.getBitmap(getContentResolver(),
 										selectedImageUri);
-						selectedImagePath = selectedImageUri.toString();
-						imageView1.setImageBitmap(bitmap);
 
+						selectedImagePath = selectedImageUri.toString();
 						ByteArrayOutputStream stream = new ByteArrayOutputStream();
-						bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+						bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+						
+						int width = bitmap.getWidth();
+						int height = bitmap.getHeight();
+						
+						float scaleWidth = ((float) newWidth) / width;
+					    float scaleHeight = ((float) newHeight) / height;
+						
+						Matrix matrix = new Matrix();
+
+					    // Resize the bit map
+					    matrix.postScale(scaleWidth, scaleHeight);
+					    
+
+//						bitmap = Bitmap.createScaledBitmap(bitmap, width,
+//								height, true);
+					    
+					    bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+
+						imageView1.setImageBitmap(bitmap);
 
 						byteImagem = stream.toByteArray();
 					} catch (FileNotFoundException e) {
@@ -393,10 +396,28 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 								.getBitmap(getContentResolver(),
 										selectedImageUri);
 						selectedImagePath = selectedImageUri.toString();
-						imageView1.setImageBitmap(bitmap);
 
 						ByteArrayOutputStream stream = new ByteArrayOutputStream();
-						bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+						bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+
+						int width = bitmap.getWidth();
+						int height = bitmap.getHeight();
+						
+						float scaleWidth = ((float) newWidth) / width;
+					    float scaleHeight = ((float) newHeight) / height;
+						
+						Matrix matrix = new Matrix();
+
+					    // Resize the bit map
+					    matrix.postScale(scaleWidth, scaleHeight);
+					    
+
+//						bitmap = Bitmap.createScaledBitmap(bitmap, width,
+//								height, true);
+					    
+					    bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+
+						imageView1.setImageBitmap(bitmap);
 
 						byteImagem = stream.toByteArray();
 					} catch (FileNotFoundException e) {
@@ -435,9 +456,9 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 					}
 
 					reader.close();
-					
-					grid_clientes.setAdapter(new SelectViewAdapter<Cliente>(this,
-							clientes));
+
+					grid_clientes.setAdapter(new SelectViewAdapter<Cliente>(
+							this, clientes));
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				} catch (IOException e) {

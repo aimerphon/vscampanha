@@ -33,6 +33,16 @@ public class CampanhaController extends DatabaseManager {
 		try {
 			beginTransaction();
 
+			ClienteController<Cliente> clienteController = new ClienteController<Cliente>(
+					true, this.context);
+
+			for (Cliente cliente : clientes) {
+				if (cliente.getIdentificador() == 0)
+				{
+					cliente.setIdentificador(clienteController.insert(cliente));
+				}
+			}
+
 			Situacao situacao = new Situacao();
 			situacao.setIdentificador(3);
 			entity.setSituacao(situacao);

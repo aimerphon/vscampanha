@@ -53,17 +53,6 @@
         android:maxLength="250"
         android:textAppearance="@style/TextMediumOrange" />
 
-    <Button
-        android:id="@+id/btnImagem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtMensagem"
-        android:layout_alignStart="@+id/txtMensagem"
-        android:layout_below="@+id/txtMensagem"
-        android:layout_marginTop="5dp"
-        android:text="@string/string_label_procurar"
-        android:textAppearance="@style/TextMediumBlue" />
-
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"

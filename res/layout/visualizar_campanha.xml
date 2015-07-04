@@ -41,35 +41,20 @@
         android:text="@string/string_padrao"
         android:textAppearance="@style/TextMediumOrange" />
 
-    <TextView
-        android:id="@+id/lblTipoMensagem"
+    <ImageView
+        android:id="@+id/imageView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
         android:layout_below="@+id/txtDescricao"
-        android:layout_marginTop="10dp"
-        android:text="@string/string_label_tipo_mensagem"
-        android:textAppearance="@style/TextMediumBlue" />
-
-    <TextView
-        android:id="@+id/txtTipoMensagem"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lblTipoMensagem"
-        android:layout_alignStart="@+id/lblTipoMensagem"
-        android:layout_below="@+id/lblTipoMensagem"
-        android:layout_marginTop="2dp"
-        android:text="@string/string_padrao"
-        android:textAppearance="@style/TextMediumOrange" />
+        android:contentDescription="@string/content_description" />
 
     <TextView
         android:id="@+id/lblMensagem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtTipoMensagem"
-        android:layout_alignStart="@+id/txtTipoMensagem"
-        android:layout_below="@+id/txtTipoMensagem"
+        android:layout_below="@+id/txtDescricao"
+        android:layout_marginStart="3dp"
+        android:layout_marginLeft="3dp"
         android:layout_marginTop="20dp"
         android:text="@string/string_label_mensagem"
         android:textAppearance="@style/TextMediumBlue" />
