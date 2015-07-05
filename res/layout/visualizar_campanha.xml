@@ -16,6 +16,7 @@
         android:layout_marginLeft="5dp"
         android:layout_marginStart="5dp"
         android:layout_marginTop="12dp"
+        android:contentDescription="@string/content_description"
         android:src="@drawable/ic_action_group" />
 
     <TextView
@@ -46,15 +47,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txtDescricao"
+        android:layout_marginTop="7dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_centerInParent="true"
         android:contentDescription="@string/content_description" />
 
+    <ProgressBar
+        android:id="@+id/progressBar1"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_centerInParent="true"
+        android:layout_below="@+id/txtDescricao" />
+        
     <TextView
         android:id="@+id/lblMensagem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/txtDescricao"
-        android:layout_marginStart="3dp"
-        android:layout_marginLeft="3dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
         android:layout_marginTop="20dp"
         android:text="@string/string_label_mensagem"
         android:textAppearance="@style/TextMediumBlue" />
@@ -69,13 +87,13 @@
         android:layout_marginTop="2dp"
         android:text="@string/string_padrao"
         android:textAppearance="@style/TextMediumOrange" />
-
+    
     <TextView
         android:id="@+id/lblClientes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/txtMensagem"
-        android:layout_alignStart="@+id/txtMensagem"
+        android:layout_marginStart="5dp"
+        android:layout_marginLeft="5dp"
         android:layout_below="@+id/txtMensagem"
         android:layout_marginTop="20dp"
         android:text="@string/string_label_clientes"
@@ -88,8 +106,6 @@
         android:layout_alignLeft="@+id/lblClientes"
         android:layout_alignStart="@+id/lblClientes"
         android:layout_below="@+id/lblClientes"
-        android:layout_marginLeft="5dp"
-        android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginTop="2dp"

@@ -1,10 +1,5 @@
 package com.luksfon.villasalute.campanha.view;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 
 import android.content.DialogInterface;
@@ -12,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +15,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.luksfon.villasalute.campanha.R;
@@ -52,15 +50,18 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 	private int indiceUltimoClienteEnviado;
 	private ImageView imgSituacao;
 	private ImageView imageView1;
+	private ProgressBar progressBar;
 	private TextView lblClientes;
-	// private TextView txtTipoEnvio;
 	private TextView lblMensagem;
 	private TextView txtMensagem;
 	private TextView txtDescricao;
-	// private TextView txtSituacao;
 	private Uri selectedImageUri;
 	private boolean fromEdit;
 	private boolean fromDetailClient;
+
+	private int mProgressStatus = 0;
+	private Bitmap bitmap = null;
+	private Handler mHandler = new Handler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +106,7 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 		lblClientes = (TextView) findViewById(R.id.lblClientes);
 		imgSituacao = (ImageView) findViewById(R.id.imgSituacao);
 		imageView1 = (ImageView) findViewById(R.id.imageView1);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 	}
 
 	@Override
@@ -125,30 +127,31 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 			this.campanha = campanha;
 
 			txtDescricao.setText(campanha.getDescricao());
-			// txtSituacao.setText(campanha.getSituacao().getDescricao());
-			gridClientes.setAdapter(new ClienteAdapter<CampanhaCliente>(this,
-					campanha.getClientes()));
-			gridClientes.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					Intent visuzalizarCliente = new Intent(parent.getContext(),
-							VisualizarClienteActivity.class);
-					CampanhaCliente campanhaCliente = (CampanhaCliente) parent
-							.getItemAtPosition(position);
-					visuzalizarCliente.putExtra(
-							ConsultaClientesActivity.EXTRA_MESSAGE, String
-									.valueOf(campanhaCliente.getCliente()
-											.getIdentificador()));
-					startActivityForResult(visuzalizarCliente,
-							VISUALIZAR_CLIENTE);
-				}
-			});
 
 			imgSituacao.setImageResource(CampanhaAdapter
 					.obterImageResId(campanha));
+			progressBar.setVisibility(View.GONE);
 
 			if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
+				gridClientes.setAdapter(new ClienteAdapter<CampanhaCliente>(
+						this, campanha.getClientes()));
+				gridClientes.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						Intent visuzalizarCliente = new Intent(parent
+								.getContext(), VisualizarClienteActivity.class);
+						CampanhaCliente campanhaCliente = (CampanhaCliente) parent
+								.getItemAtPosition(position);
+						visuzalizarCliente.putExtra(
+								ConsultaClientesActivity.EXTRA_MESSAGE, String
+										.valueOf(campanhaCliente.getCliente()
+												.getIdentificador()));
+						startActivityForResult(visuzalizarCliente,
+								VISUALIZAR_CLIENTE);
+					}
+				});
+
 				lblMensagem.setVisibility(View.GONE);
 				txtMensagem.setVisibility(View.GONE);
 
@@ -160,33 +163,38 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 					if (selectedImageUri == null) {
 						lblMensagem.setVisibility(View.GONE);
 						txtMensagem.setVisibility(View.GONE);
+						imageView1.setVisibility(View.GONE);
+						progressBar.setVisibility(View.VISIBLE);
 
 						Uri uri = Uri.parse(campanha.getCaminhoImagem());
 
-						BufferedReader reader = null;
-						try {
-							reader = new BufferedReader(new InputStreamReader(
-									getContentResolver().openInputStream(uri)));
+						selectedImageUri = uri;
 
-							selectedImageUri = uri;
+						new Thread(new Runnable() {
+							public void run() {
+								while (mProgressStatus < 100) {
+									bitmap = carregarImagem(progressBar,
+											imageView1, selectedImageUri);
+									mProgressStatus = 100;
 
-							Bitmap bitmap;
-							bitmap = android.provider.MediaStore.Images.Media
-									.getBitmap(getContentResolver(), uri);
-
-							imageView1.setImageBitmap(bitmap);
-
-							ByteArrayOutputStream stream = new ByteArrayOutputStream();
-							bitmap.compress(Bitmap.CompressFormat.PNG, 100,
-									stream);
-
-							reader.close();
-
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+									// Update the progress bar
+									mHandler.post(new Runnable() {
+										public void run() {
+											progressBar
+													.setProgress(mProgressStatus);
+											progressBar
+													.setVisibility(View.GONE);
+											imageView1.setVisibility(View.VISIBLE);
+											imageView1.setImageBitmap(bitmap);
+											imageView1
+													.setAdjustViewBounds(true);
+											imageView1
+													.setScaleType(ScaleType.CENTER_CROP);
+										}
+									});
+								}
+							}
+						}).start();
 					}
 				}
 
@@ -333,7 +341,8 @@ public class VisualizarCampanhaActivity extends BaseActivity {
 						i.setType("image/*");
 						i.putExtra(Intent.EXTRA_STREAM, selectedImageUri);
 						i.setPackage("com.whatsapp");
-						startActivityForResult(Intent.createChooser(i, ""), WHATSAPP);
+						startActivityForResult(Intent.createChooser(i, ""),
+								WHATSAPP);
 					}
 				}
 			}

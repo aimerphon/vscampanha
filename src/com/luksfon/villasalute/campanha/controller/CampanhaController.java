@@ -35,16 +35,32 @@ public class CampanhaController extends DatabaseManager {
 
 			ClienteController<Cliente> clienteController = new ClienteController<Cliente>(
 					true, this.context);
+			Cliente clienteCadastrado = null;
 
 			for (Cliente cliente : clientes) {
-				if (cliente.getIdentificador() == 0)
-				{
-					cliente.setIdentificador(clienteController.insert(cliente));
+				if (cliente.getIdentificador() == 0) {
+					clienteCadastrado = where(
+							new Restriction(context
+									.getString(R.string.table_column_telefone),
+									clienteController
+											.getTableName(Cliente.class),
+									LogicComparator.Equals, cliente
+											.getTelefone())).firstOrDefault(
+							Cliente.class);
+					if (clienteCadastrado == null) {
+						cliente.setIdentificador(clienteController
+								.insert(cliente));
+
+						clienteCadastrado = cliente;
+					} else {
+						cliente.setIdentificador(clienteCadastrado
+								.getIdentificador());
+					}
 				}
 			}
 
 			Situacao situacao = new Situacao();
-			situacao.setIdentificador(3);
+			situacao.setIdentificador(SituacaoCampanha.NAO_ENVIADO.getValue());
 			entity.setSituacao(situacao);
 			rowsAffected = super.insert(entity);
 			entity.setIdentificador(rowsAffected);
@@ -75,6 +91,8 @@ public class CampanhaController extends DatabaseManager {
 			rollBack();
 		} catch (BusinessException ex) {
 			rollBack();
+		} catch (InstantiationException e) {
+			rollBack();
 		}
 
 		return rowsAffected;
@@ -88,7 +106,7 @@ public class CampanhaController extends DatabaseManager {
 			beginTransaction();
 
 			Situacao situacao = new Situacao();
-			situacao.setIdentificador(3);
+			situacao.setIdentificador(SituacaoCampanha.NAO_ENVIADO.getValue());
 			entity.setSituacao(situacao);
 			rowsAffected = super.update(entity);
 

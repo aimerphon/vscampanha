@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +28,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -350,8 +350,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				Point size = new Point();
 				display.getSize(size);
 
-				int newWidth = size.x - 50;
-				int newHeight = size.y - 50;
+				int newWidth = size.x;
+				int newHeight = size.y;
 
 				if (selectedImagePath != null) {
 					Bitmap bitmap;
@@ -362,26 +362,27 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 						selectedImagePath = selectedImageUri.toString();
 						ByteArrayOutputStream stream = new ByteArrayOutputStream();
-						bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
-						
-						int width = bitmap.getWidth();
-						int height = bitmap.getHeight();
-						
-						float scaleWidth = ((float) newWidth) / width;
-					    float scaleHeight = ((float) newHeight) / height;
-						
-						Matrix matrix = new Matrix();
+						bitmap.compress(Bitmap.CompressFormat.PNG, 10, stream);
 
-					    // Resize the bit map
-					    matrix.postScale(scaleWidth, scaleHeight);
-					    
+						// int width = bitmap.getWidth();
+						// int height = bitmap.getHeight();
+						//
+						// float scaleWidth = ((float) newWidth) / width;
+						// float scaleHeight = ((float) newHeight) / height;
+						//
+						// Matrix matrix = new Matrix();
+						//
+						// // Resize the bit map
+						// matrix.postScale(scaleWidth, scaleHeight);
 
-//						bitmap = Bitmap.createScaledBitmap(bitmap, width,
-//								height, true);
-					    
-					    bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+						bitmap = Bitmap.createScaledBitmap(bitmap, newWidth,
+								newHeight, true);
+
+						// bitmap = Bitmap.createBitmap(bitmap, 0, 0, width,
+						// height, matrix, false);
 
 						imageView1.setImageBitmap(bitmap);
+						imageView1.setAdjustViewBounds(true);
 
 						byteImagem = stream.toByteArray();
 					} catch (FileNotFoundException e) {
@@ -400,24 +401,26 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 						ByteArrayOutputStream stream = new ByteArrayOutputStream();
 						bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
 
-						int width = bitmap.getWidth();
-						int height = bitmap.getHeight();
-						
-						float scaleWidth = ((float) newWidth) / width;
-					    float scaleHeight = ((float) newHeight) / height;
-						
-						Matrix matrix = new Matrix();
+						// int width = bitmap.getWidth();
+						// int height = bitmap.getHeight();
 
-					    // Resize the bit map
-					    matrix.postScale(scaleWidth, scaleHeight);
-					    
+						// float scaleWidth = ((float) newWidth) / width;
+						// float scaleHeight = ((float) newHeight) / height;
+						//
+						// Matrix matrix = new Matrix();
+						//
+						// // Resize the bit map
+						// matrix.postScale(scaleWidth, scaleHeight);
 
-//						bitmap = Bitmap.createScaledBitmap(bitmap, width,
-//								height, true);
-					    
-					    bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false);
+						bitmap = Bitmap.createScaledBitmap(bitmap, newWidth,
+								newHeight, true);
+
+						// bitmap = Bitmap.createBitmap(bitmap, 0, 0, width,
+						// height, matrix, false);
 
 						imageView1.setImageBitmap(bitmap);
+						imageView1.setAdjustViewBounds(true);
+						imageView1.setScaleType(ScaleType.CENTER_CROP);
 
 						byteImagem = stream.toByteArray();
 					} catch (FileNotFoundException e) {

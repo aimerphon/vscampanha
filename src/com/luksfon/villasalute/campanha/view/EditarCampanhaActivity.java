@@ -1,23 +1,32 @@
 package com.luksfon.villasalute.campanha.view;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -38,7 +47,6 @@ public class EditarCampanhaActivity extends BaseActivity {
 	public final static String EXTRA_MESSAGE = "com.luksfon.villasalute.campanha.view.EditarCampanhaActivity.MESSAGE";
 
 	private Campanha campanha;
-	private Button btnSelecionarImagem;
 	private EditText txtDescricao;
 	private EditText txtMensagem;
 	private ListView grid_clientes;
@@ -50,28 +58,13 @@ public class EditarCampanhaActivity extends BaseActivity {
 	private RadioButton rbtManual;
 	private RadioButton rbtAutomatico;
 	private RadioGroup rdgTipo;
-//	private boolean voltar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-//		voltar = true;
 		layoutResId = R.layout.editar_campanha;
-		
+
 		super.onCreate(savedInstanceState);
 	}
-
-	// @Override
-	// protected void onCreate(Bundle savedInstanceState) {
-	// super.onCreate(savedInstanceState);
-	// setContentView(R.layout.editar_campanha);
-	// voltar = true;
-	//
-	// try {
-	// inicializarTela();
-	// } catch (Exception ex) {
-	// Log.println(0, "EditarCampanhaActivity.onCreate", ex.getMessage());
-	// }
-	// }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -83,7 +76,7 @@ public class EditarCampanhaActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_accept:
-//			voltar = false;
+			// voltar = false;
 			editarCampanha();
 			return true;
 		default:
@@ -93,19 +86,14 @@ public class EditarCampanhaActivity extends BaseActivity {
 
 	@Override
 	public void onBackPressed() {
-//		if (!voltar) {
-			Intent visuzalizarCampanha = getIntent();
-			visuzalizarCampanha.putExtra(
-					VisualizarCampanhaActivity.EXTRA_MESSAGE,
-					String.valueOf(campanha.getIdentificador()));
-			visuzalizarCampanha.putExtra(
-					VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR,
-					String.valueOf(campanha.getIdentificador()));
-			setResult(RESULT_OK, visuzalizarCampanha);
-			finish();
-//		} else {
-//			super.onBackPressed();
-//		}
+		Intent visuzalizarCampanha = getIntent();
+		visuzalizarCampanha.putExtra(VisualizarCampanhaActivity.EXTRA_MESSAGE,
+				String.valueOf(campanha.getIdentificador()));
+		visuzalizarCampanha.putExtra(
+				VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR,
+				String.valueOf(campanha.getIdentificador()));
+		setResult(RESULT_OK, visuzalizarCampanha);
+		finish();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -139,7 +127,6 @@ public class EditarCampanhaActivity extends BaseActivity {
 					VisualizarCampanhaActivity.EXTRA_MESSAGE_EDITAR,
 					String.valueOf(campanha.getIdentificador()));
 
-			// super.onBackPressed();
 			onBackPressed();
 		} catch (BusinessException e) {
 			showMessage(e.getMessage());
@@ -156,8 +143,6 @@ public class EditarCampanhaActivity extends BaseActivity {
 		lblClientes = (TextView) findViewById(R.id.lblClientes);
 		grid_clientes = (ListView) findViewById(R.id.grid_clientes);
 		imageView1 = (ImageView) findViewById(R.id.imageView1);
-		btnSelecionarImagem = (Button) findViewById(R.id.btnImagem);
-		btnSelecionarImagem.setVisibility(View.GONE);
 		txtMensagem = (EditText) findViewById(R.id.txtMensagem);
 		rbtImagem = (RadioButton) findViewById(R.id.rbtImagem);
 		rbtImagem.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -165,8 +150,6 @@ public class EditarCampanhaActivity extends BaseActivity {
 			public void onCheckedChanged(CompoundButton buttonView,
 					boolean isChecked) {
 				txtMensagem.setEnabled(true);
-				btnSelecionarImagem.setVisibility(View.GONE);
-				btnSelecionarImagem.setEnabled(false);
 				imageView1.setVisibility(View.GONE);
 			}
 		});
@@ -194,7 +177,6 @@ public class EditarCampanhaActivity extends BaseActivity {
 				lblTipoMensagem.setVisibility(View.VISIBLE);
 				rdgTipo.setVisibility(View.VISIBLE);
 				txtMensagem.setVisibility(View.VISIBLE);
-				btnSelecionarImagem.setVisibility(View.GONE);
 				imageView1.setVisibility(View.GONE);
 				rbtTexto.setChecked(true);
 			}
@@ -212,7 +194,6 @@ public class EditarCampanhaActivity extends BaseActivity {
 						grid_clientes.getAdapter().getCount());
 				grid_clientes.setLayoutParams(layoutParams);
 				lblClientes.setVisibility(View.VISIBLE);
-				// TODO Ajustar a seleção de imagem
 				lblTipoMensagem.setVisibility(View.GONE);
 				txtMensagem.setVisibility(View.GONE);
 				rdgTipo.setVisibility(View.GONE);
@@ -236,39 +217,40 @@ public class EditarCampanhaActivity extends BaseActivity {
 
 			txtDescricao.setText(campanha.getDescricao());
 
-			ArrayList<Cliente> clientes = new ClienteController<Cliente>(true,
-					getApplicationContext()).toList(Cliente.class);
-
-			SelectViewAdapter<Cliente> adapter = new SelectViewAdapter<Cliente>(
-					this, clientes);
-
-			ArrayList<Cliente> clientesSelecionados = new ArrayList<Cliente>();
-
-			for (CampanhaCliente campanhacliente : campanha.getClientes()) {
-				clientesSelecionados.add(campanhacliente.getCliente());
-			}
-
-			grid_clientes.setAdapter(adapter);
-			this.setGridViewHeightBasedOnChildren(grid_clientes,
-					clientes.size());
-			grid_clientes.setOnItemClickListener(new OnItemClickListener() {
-				@Override
-				public void onItemClick(AdapterView<?> parent, View view,
-						int position, long id) {
-					boolean checked = ((SelectViewAdapter<?>) parent
-							.getAdapter()).selecionarItem(position);
-					if (checked) {
-						view.setBackgroundColor(Color.rgb(255, 204, 153));
-						view.setBackgroundColor(Color.rgb(255, 166, 76));
-					} else {
-						view.setBackgroundColor(Color.TRANSPARENT);
-					}
-				}
-			});
-
-			adapter.setSelectedItens(clientesSelecionados);
-
 			if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
+
+				ArrayList<Cliente> clientes = new ClienteController<Cliente>(
+						true, getApplicationContext()).toList(Cliente.class);
+
+				SelectViewAdapter<Cliente> adapter = new SelectViewAdapter<Cliente>(
+						this, clientes);
+
+				ArrayList<Cliente> clientesSelecionados = new ArrayList<Cliente>();
+
+				for (CampanhaCliente campanhacliente : campanha.getClientes()) {
+					clientesSelecionados.add(campanhacliente.getCliente());
+				}
+
+				grid_clientes.setAdapter(adapter);
+				this.setGridViewHeightBasedOnChildren(grid_clientes,
+						clientes.size());
+				grid_clientes.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						boolean checked = ((SelectViewAdapter<?>) parent
+								.getAdapter()).selecionarItem(position);
+						if (checked) {
+							view.setBackgroundColor(Color.rgb(255, 204, 153));
+							view.setBackgroundColor(Color.rgb(255, 166, 76));
+						} else {
+							view.setBackgroundColor(Color.TRANSPARENT);
+						}
+					}
+				});
+
+				adapter.setSelectedItens(clientesSelecionados);
+
 				rbtAutomatico.setChecked(true);
 				grid_clientes.setVisibility(View.VISIBLE);
 				ViewGroup.LayoutParams layoutParams = grid_clientes
@@ -277,7 +259,6 @@ public class EditarCampanhaActivity extends BaseActivity {
 						grid_clientes.getAdapter().getCount());
 				grid_clientes.setLayoutParams(layoutParams);
 				lblClientes.setVisibility(View.VISIBLE);
-				// TODO Ajustar a seleção de imagem
 				lblTipoMensagem.setVisibility(View.GONE);
 				txtMensagem.setVisibility(View.GONE);
 				rdgTipo.setVisibility(View.GONE);
@@ -286,16 +267,65 @@ public class EditarCampanhaActivity extends BaseActivity {
 				lblClientes.setVisibility(View.GONE);
 				lblTipoMensagem.setVisibility(View.VISIBLE);
 				rdgTipo.setVisibility(View.VISIBLE);
-				txtMensagem.setVisibility(View.VISIBLE);
-				btnSelecionarImagem.setVisibility(View.GONE);
-				imageView1.setVisibility(View.GONE);
 
 				if (campanha.getCaminhoImagem() == null) {
 					rbtTexto.setChecked(true);
 					txtMensagem.setText(campanha.getMensagem());
+					txtMensagem.setVisibility(View.VISIBLE);
+					imageView1.setVisibility(View.GONE);
 				} else {
 					rbtImagem.setChecked(true);
 					txtMensagem.setVisibility(View.GONE);
+					imageView1.setVisibility(View.VISIBLE);
+
+					Uri uri = Uri.parse(campanha.getCaminhoImagem());
+
+					Display display = getWindowManager().getDefaultDisplay();
+					Point size = new Point();
+					display.getSize(size);
+
+					int newWidth = size.x;
+					int newHeight = size.y;
+
+					BufferedReader reader = null;
+					try {
+						reader = new BufferedReader(new InputStreamReader(
+								getContentResolver().openInputStream(uri)));
+
+						Bitmap bitmap = android.provider.MediaStore.Images.Media
+								.getBitmap(getContentResolver(), uri);
+
+						ByteArrayOutputStream stream = new ByteArrayOutputStream();
+						bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+
+						// int width = bitmap.getWidth();
+						// int height = bitmap.getHeight();
+						//
+						// float scaleWidth = ((float) newWidth) / width;
+						// float scaleHeight = ((float) newHeight) / height;
+						//
+						// Matrix matrix = new Matrix();
+						//
+						// // Resize the bit map
+						// matrix.postScale(scaleWidth, scaleHeight);
+						//
+						// bitmap = Bitmap.createBitmap(bitmap, 0, 0, width,
+						// height, matrix, false);
+						
+						bitmap = Bitmap.createScaledBitmap(bitmap,
+								newWidth, newHeight, true);
+
+						imageView1.setImageBitmap(bitmap);
+						imageView1.setAdjustViewBounds(true);
+						imageView1.setScaleType(ScaleType.CENTER_CROP);
+
+						reader.close();
+
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 
