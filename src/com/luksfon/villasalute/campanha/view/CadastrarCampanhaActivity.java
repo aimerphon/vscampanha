@@ -1,7 +1,6 @@
 package com.luksfon.villasalute.campanha.view;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -13,11 +12,10 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore.MediaColumns;
-import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -52,6 +51,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 	private EditText txtMensagem;
 	private ImageView imageView1;
 	private ListView grid_clientes;
+	private ProgressBar progressBar;
 	private RadioButton rbtTexto;
 	private RadioButton rbtImagem;
 	private RadioButton rbtManual;
@@ -62,6 +62,10 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 
 	private String selectedImagePath;
 	private byte[] byteImagem;
+	private int mProgressStatus = 0;
+	private Bitmap bitmap = null;
+	private Handler mHandler = new Handler();
+	private Uri selectedImageUri;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +127,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		rbtTexto = (RadioButton) findViewById(R.id.rbtTexto);
 		rbtAutomatico = (RadioButton) findViewById(R.id.rbtAutomatico);
 		rbtManual = (RadioButton) findViewById(R.id.rbtManual);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
 	}
 
 	@Override
@@ -130,6 +135,8 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 		txtDescricao.setText(this.getApplicationContext().getString(
 				R.string.string_empty));
 		txtDescricao.setEnabled(true);
+		progressBar.setVisibility(View.GONE);
+
 		rbtImagem.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
@@ -149,7 +156,7 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 				txtMensagem.setVisibility(View.GONE);
 				txtMensagem.setText(getApplicationContext().getString(
 						R.string.string_empty));
-				imageView1.setVisibility(View.VISIBLE);
+				imageView1.setVisibility(View.GONE);
 
 				if (!isChecked) {
 					selecionarImagem();
@@ -341,94 +348,33 @@ public class CadastrarCampanhaActivity extends BaseActivity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
 			if (requestCode == SELECT_PICTURE) {
-				Uri selectedImageUri = data.getData();
-				// Log.d("URI VAL",
-				// "selectedImageUri = " + selectedImageUri.toString());
-				selectedImagePath = getPath(selectedImageUri);
+				selectedImageUri = data.getData();
+				selectedImagePath = selectedImageUri.toString();
+				progressBar.setVisibility(View.VISIBLE);
 
-				Display display = getWindowManager().getDefaultDisplay();
-				Point size = new Point();
-				display.getSize(size);
+				new Thread(new Runnable() {
+					public void run() {
+						while (mProgressStatus < 100) {
+							bitmap = carregarImagem(progressBar, imageView1,
+									selectedImageUri);
+							mProgressStatus = 100;
 
-				int newWidth = size.x;
-				int newHeight = size.y;
-
-				if (selectedImagePath != null) {
-					Bitmap bitmap;
-					try {
-						bitmap = android.provider.MediaStore.Images.Media
-								.getBitmap(getContentResolver(),
-										selectedImageUri);
-
-						selectedImagePath = selectedImageUri.toString();
-						ByteArrayOutputStream stream = new ByteArrayOutputStream();
-						bitmap.compress(Bitmap.CompressFormat.PNG, 10, stream);
-
-						// int width = bitmap.getWidth();
-						// int height = bitmap.getHeight();
-						//
-						// float scaleWidth = ((float) newWidth) / width;
-						// float scaleHeight = ((float) newHeight) / height;
-						//
-						// Matrix matrix = new Matrix();
-						//
-						// // Resize the bit map
-						// matrix.postScale(scaleWidth, scaleHeight);
-
-						bitmap = Bitmap.createScaledBitmap(bitmap, newWidth,
-								newHeight, true);
-
-						// bitmap = Bitmap.createBitmap(bitmap, 0, 0, width,
-						// height, matrix, false);
-
-						imageView1.setImageBitmap(bitmap);
-						imageView1.setAdjustViewBounds(true);
-
-						byteImagem = stream.toByteArray();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
+							// Update the progress bar
+							mHandler.post(new Runnable() {
+								public void run() {
+									progressBar.setProgress(mProgressStatus);
+									progressBar.setVisibility(View.GONE);
+									imageView1.setVisibility(View.VISIBLE);
+									imageView1.setImageBitmap(bitmap);
+									imageView1.setAdjustViewBounds(true);
+									imageView1
+											.setScaleType(ScaleType.CENTER_CROP);
+								}
+							});
+						}
 					}
-				} else {
-					Bitmap bitmap;
-					try {
-						bitmap = android.provider.MediaStore.Images.Media
-								.getBitmap(getContentResolver(),
-										selectedImageUri);
-						selectedImagePath = selectedImageUri.toString();
+				}).start();
 
-						ByteArrayOutputStream stream = new ByteArrayOutputStream();
-						bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
-
-						// int width = bitmap.getWidth();
-						// int height = bitmap.getHeight();
-
-						// float scaleWidth = ((float) newWidth) / width;
-						// float scaleHeight = ((float) newHeight) / height;
-						//
-						// Matrix matrix = new Matrix();
-						//
-						// // Resize the bit map
-						// matrix.postScale(scaleWidth, scaleHeight);
-
-						bitmap = Bitmap.createScaledBitmap(bitmap, newWidth,
-								newHeight, true);
-
-						// bitmap = Bitmap.createBitmap(bitmap, 0, 0, width,
-						// height, matrix, false);
-
-						imageView1.setImageBitmap(bitmap);
-						imageView1.setAdjustViewBounds(true);
-						imageView1.setScaleType(ScaleType.CENTER_CROP);
-
-						byteImagem = stream.toByteArray();
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
 			} else if (requestCode == PICKFILE_RESULT_CODE) {
 				Uri uri = data.getData();
 

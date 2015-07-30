@@ -23,7 +23,6 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-import android.widget.ImageView.ScaleType;
 
 import com.luksfon.villasalute.campanha.R;
 
@@ -97,8 +96,8 @@ public abstract class BaseActivity extends Activity {
 		return totalHeight;
 	}
 
-	protected Bitmap carregarImagem(ProgressBar progressBar, ImageView imageView,
-			Uri uri) {
+	protected Bitmap carregarImagem(ProgressBar progressBar,
+			ImageView imageView, Uri uri) {
 		Display display = getWindowManager().getDefaultDisplay();
 		Point size = new Point();
 		display.getSize(size);
@@ -108,45 +107,27 @@ public abstract class BaseActivity extends Activity {
 		Bitmap bitmap = null;
 
 		BufferedReader reader = null;
+
 		try {
 			reader = new BufferedReader(new InputStreamReader(
 					getContentResolver().openInputStream(uri)));
 
-			
 			bitmap = android.provider.MediaStore.Images.Media.getBitmap(
 					getContentResolver(), uri);
 
 			ByteArrayOutputStream stream = new ByteArrayOutputStream();
 			bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
 
-			// int width = bitmap.getWidth();
-			// int height = bitmap.getHeight();
-
-			// float scaleWidth = ((float) newWidth) / width;
-			// float scaleHeight = ((float) newHeight) / height;
-			//
-			// Matrix matrix = new Matrix();
-			//
-			// // Resize the bit map
-			// matrix.postScale(scaleWidth, scaleHeight);
-			//
-			// bitmap = Bitmap.createBitmap(bitmap, 0, 0, width,
-			// height, matrix, false);
-
 			bitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight,
 					true);
 
-			
-
 			reader.close();
-			
-			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return bitmap;
 	}
 }

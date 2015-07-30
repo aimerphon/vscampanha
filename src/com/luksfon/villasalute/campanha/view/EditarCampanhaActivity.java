@@ -1,10 +1,5 @@
 package com.luksfon.villasalute.campanha.view;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +7,9 @@ import java.util.List;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Display;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,6 +22,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -51,6 +46,7 @@ public class EditarCampanhaActivity extends BaseActivity {
 	private EditText txtMensagem;
 	private ListView grid_clientes;
 	private ImageView imageView1;
+	private ProgressBar progressBar;
 	private TextView lblClientes;
 	private TextView lblTipoMensagem;
 	private RadioButton rbtTexto;
@@ -58,6 +54,11 @@ public class EditarCampanhaActivity extends BaseActivity {
 	private RadioButton rbtManual;
 	private RadioButton rbtAutomatico;
 	private RadioGroup rdgTipo;
+	
+	private Uri selectedImageUri;
+	private int mProgressStatus = 0;
+	private Bitmap bitmap = null;
+	private Handler mHandler = new Handler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +146,8 @@ public class EditarCampanhaActivity extends BaseActivity {
 		imageView1 = (ImageView) findViewById(R.id.imageView1);
 		txtMensagem = (EditText) findViewById(R.id.txtMensagem);
 		rbtImagem = (RadioButton) findViewById(R.id.rbtImagem);
+		progressBar = (ProgressBar) findViewById(R.id.progressBar1);
+		
 		rbtImagem.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 			@Override
 			public void onCheckedChanged(CompoundButton buttonView,
@@ -216,6 +219,7 @@ public class EditarCampanhaActivity extends BaseActivity {
 			campanha = campanhaController.get(campanha);
 
 			txtDescricao.setText(campanha.getDescricao());
+			progressBar.setVisibility(View.GONE);
 
 			if (TipoEnvio.AUTOMATICO.getValue() == campanha.getTipoEnvio()) {
 
@@ -267,65 +271,46 @@ public class EditarCampanhaActivity extends BaseActivity {
 				lblClientes.setVisibility(View.GONE);
 				lblTipoMensagem.setVisibility(View.VISIBLE);
 				rdgTipo.setVisibility(View.VISIBLE);
+				imageView1.setVisibility(View.GONE);
 
 				if (campanha.getCaminhoImagem() == null) {
 					rbtTexto.setChecked(true);
 					txtMensagem.setText(campanha.getMensagem());
 					txtMensagem.setVisibility(View.VISIBLE);
-					imageView1.setVisibility(View.GONE);
+					
 				} else {
 					rbtImagem.setChecked(true);
 					txtMensagem.setVisibility(View.GONE);
-					imageView1.setVisibility(View.VISIBLE);
+					progressBar.setVisibility(View.VISIBLE);
 
 					Uri uri = Uri.parse(campanha.getCaminhoImagem());
+					selectedImageUri = uri;
+					
+					new Thread(new Runnable() {
+						public void run() {
+							while (mProgressStatus < 100) {
+								bitmap = carregarImagem(progressBar,
+										imageView1, selectedImageUri);
+								mProgressStatus = 100;
 
-					Display display = getWindowManager().getDefaultDisplay();
-					Point size = new Point();
-					display.getSize(size);
-
-					int newWidth = size.x;
-					int newHeight = size.y;
-
-					BufferedReader reader = null;
-					try {
-						reader = new BufferedReader(new InputStreamReader(
-								getContentResolver().openInputStream(uri)));
-
-						Bitmap bitmap = android.provider.MediaStore.Images.Media
-								.getBitmap(getContentResolver(), uri);
-
-						ByteArrayOutputStream stream = new ByteArrayOutputStream();
-						bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
-
-						// int width = bitmap.getWidth();
-						// int height = bitmap.getHeight();
-						//
-						// float scaleWidth = ((float) newWidth) / width;
-						// float scaleHeight = ((float) newHeight) / height;
-						//
-						// Matrix matrix = new Matrix();
-						//
-						// // Resize the bit map
-						// matrix.postScale(scaleWidth, scaleHeight);
-						//
-						// bitmap = Bitmap.createBitmap(bitmap, 0, 0, width,
-						// height, matrix, false);
-						
-						bitmap = Bitmap.createScaledBitmap(bitmap,
-								newWidth, newHeight, true);
-
-						imageView1.setImageBitmap(bitmap);
-						imageView1.setAdjustViewBounds(true);
-						imageView1.setScaleType(ScaleType.CENTER_CROP);
-
-						reader.close();
-
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+								// Update the progress bar
+								mHandler.post(new Runnable() {
+									public void run() {
+										progressBar
+												.setProgress(mProgressStatus);
+										progressBar
+												.setVisibility(View.GONE);
+										imageView1.setVisibility(View.VISIBLE);
+										imageView1.setImageBitmap(bitmap);
+										imageView1
+												.setAdjustViewBounds(true);
+										imageView1
+												.setScaleType(ScaleType.CENTER_CROP);
+									}
+								});
+							}
+						}
+					}).start();
 				}
 			}
 
